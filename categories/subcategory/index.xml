@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>subcategory on Howsin&#39;s Note</title>
+    <link>https://howsin.github.io/blog/categories/subcategory/</link>
+    <description>Recent content in subcategory on Howsin&#39;s Note</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 09 Sep 2021 10:10:34 +0800</lastBuildDate><atom:link href="https://howsin.github.io/blog/categories/subcategory/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Aws Cloudfront</title>
+      <link>https://howsin.github.io/blog/post/aws-cloudfront/</link>
+      <pubDate>Thu, 09 Sep 2021 10:10:34 +0800</pubDate>
+      
+      <guid>https://howsin.github.io/blog/post/aws-cloudfront/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

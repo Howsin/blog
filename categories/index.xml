@@ -5,6 +5,25 @@
     <link>https://howsin.github.io/blog/categories/</link>
     <description>Recent content in Categories on Howsin&#39;s Note</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language><atom:link href="https://howsin.github.io/blog/categories/index.xml" rel="self" type="application/rss+xml" />
+    <language>en-us</language>
+    <lastBuildDate>Thu, 09 Sep 2021 10:10:34 +0800</lastBuildDate><atom:link href="https://howsin.github.io/blog/categories/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>category</title>
+      <link>https://howsin.github.io/blog/categories/category/</link>
+      <pubDate>Thu, 09 Sep 2021 10:10:34 +0800</pubDate>
+      
+      <guid>https://howsin.github.io/blog/categories/category/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>subcategory</title>
+      <link>https://howsin.github.io/blog/categories/subcategory/</link>
+      <pubDate>Thu, 09 Sep 2021 10:10:34 +0800</pubDate>
+      
+      <guid>https://howsin.github.io/blog/categories/subcategory/</guid>
+      <description></description>
+    </item>
+    
   </channel>
 </rss>

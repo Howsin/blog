@@ -2,23 +2,42 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://howsin.github.io/blog/post/aws-cloudfront/</loc>
+    <lastmod>2021-09-09T10:10:34+08:00</lastmod>
+  </url><url>
+    <loc>https://howsin.github.io/blog/categories/</loc>
+    <lastmod>2021-09-09T10:10:34+08:00</lastmod>
+  </url><url>
+    <loc>https://howsin.github.io/blog/categories/category/</loc>
+    <lastmod>2021-09-09T10:10:34+08:00</lastmod>
+  </url><url>
     <loc>https://howsin.github.io/blog/</loc>
+    <lastmod>2021-09-09T10:10:34+08:00</lastmod>
+  </url><url>
+    <loc>https://howsin.github.io/blog/post/</loc>
+    <lastmod>2021-09-09T10:10:34+08:00</lastmod>
+  </url><url>
+    <loc>https://howsin.github.io/blog/categories/subcategory/</loc>
+    <lastmod>2021-09-09T10:10:34+08:00</lastmod>
+  </url><url>
+    <loc>https://howsin.github.io/blog/tags/tag1/</loc>
+    <lastmod>2021-09-09T10:10:34+08:00</lastmod>
+  </url><url>
+    <loc>https://howsin.github.io/blog/tags/tag2/</loc>
+    <lastmod>2021-09-09T10:10:34+08:00</lastmod>
+  </url><url>
+    <loc>https://howsin.github.io/blog/tags/</loc>
+    <lastmod>2021-09-09T10:10:34+08:00</lastmod>
+  </url><url>
+    <loc>https://howsin.github.io/blog/post/hello-hugo/</loc>
     <lastmod>2021-09-07T16:37:47+08:00</lastmod>
   </url><url>
     <loc>https://howsin.github.io/blog/tags/other/</loc>
     <lastmod>2021-09-07T16:37:47+08:00</lastmod>
   </url><url>
-    <loc>https://howsin.github.io/blog/post/</loc>
-    <lastmod>2021-09-07T16:37:47+08:00</lastmod>
-  </url><url>
-    <loc>https://howsin.github.io/blog/tags/</loc>
-    <lastmod>2021-09-07T16:37:47+08:00</lastmod>
-  </url><url>
-    <loc>https://howsin.github.io/blog/post/hello-hugo/</loc>
+    <loc>https://howsin.github.io/blog/tags/tool/</loc>
     <lastmod>2021-09-07T16:37:47+08:00</lastmod>
   </url><url>
     <loc>https://howsin.github.io/blog/archives/</loc>
-  </url><url>
-    <loc>https://howsin.github.io/blog/categories/</loc>
   </url>
 </urlset>

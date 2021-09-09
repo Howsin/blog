@@ -6,9 +6,18 @@
     <description>Recent content in Posts on Howsin&#39;s Note</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 07 Sep 2021 16:37:47 +0800</lastBuildDate><atom:link href="https://howsin.github.io/blog/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 09 Sep 2021 10:10:34 +0800</lastBuildDate><atom:link href="https://howsin.github.io/blog/post/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>使用hugo在github上架設客製化域名的blog</title>
+      <title>Aws Cloudfront</title>
+      <link>https://howsin.github.io/blog/post/aws-cloudfront/</link>
+      <pubDate>Thu, 09 Sep 2021 10:10:34 +0800</pubDate>
+      
+      <guid>https://howsin.github.io/blog/post/aws-cloudfront/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>hugo於github上自架blog</title>
       <link>https://howsin.github.io/blog/post/hello-hugo/</link>
       <pubDate>Tue, 07 Sep 2021 16:37:47 +0800</pubDate>
       

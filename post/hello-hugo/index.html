@@ -35,8 +35,8 @@
 <meta property="og:description" content="Introduction
 隨著接觸到的技術越來越多，每次看過資料總是只有當下有記憶，只有那些常常用到的技術記憶相對深刻，其餘的就算解決過再遇到還是必須要再查一次，這時候就只能憑著印象去重頭摸索了，如果能有一個自己的技術blog，吸收了這些知識後寫下自己內化過的理解，一方面可以幫助遇到同樣問題的朋友，一方面也可以讓自己印象加深，看起來是個完美的解決方案。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="使用hugo在github上架設客製化域名的blog">
-<meta name="twitter:title" content="使用hugo在github上架設客製化域名的blog">
+<meta property="og:title" content="hugo於github上自架blog">
+<meta name="twitter:title" content="hugo於github上自架blog">
 <meta property="og:url" content="https://howsin.github.io/blog/post/hello-hugo/">
 <meta property="twitter:url" content="https://howsin.github.io/blog/post/hello-hugo/">
 <meta property="og:site_name" content="Howsin&#39;s Note">
@@ -55,6 +55,8 @@
   
   
   
+    
+      <meta property="article:tag" content="tool">
     
       <meta property="article:tag" content="other">
     
@@ -77,7 +79,7 @@
 
 
 
-    <title>使用hugo在github上架設客製化域名的blog</title>
+    <title>hugo於github上自架blog</title>
 
     <link rel="icon" href="https://howsin.github.io/blog/favicon.png">
     
@@ -224,7 +226,7 @@
             <div class="post-header main-content-wrap text-left">
   
     <h1 class="post-title">
-      使用hugo在github上架設客製化域名的blog
+      hugo於github上自架blog
     </h1>
   
   
@@ -246,34 +248,47 @@
               <h3 id="introduction">Introduction</h3>
 <p>隨著接觸到的技術越來越多，每次看過資料總是只有當下有記憶，只有那些常常用到的技術記憶相對深刻，其餘的就算解決過再遇到還是必須要再查一次，這時候就只能憑著印象去重頭摸索了，如果能有一個自己的技術blog，吸收了這些知識後寫下自己內化過的理解，一方面可以幫助遇到同樣問題的朋友，一方面也可以讓自己印象加深，看起來是個完美的解決方案。</p>
 <p>其實想經營一個技術blog的念頭一直都在，但遲遲無法下定決心，總是寫個一兩篇就無限停更，找不到一個維持住寫作熱情的動力，或許是因為以往開始這件事太輕鬆，找個主流blog網站申請個帳號就可以開始，不花力氣的事就不會太重視，<del>這才是真正的原因，絕對不是我太懶</del>。</p>
-<p>以往我用的blog都使用後台管理模式，可以登入帳號密碼到後台，客製化自己blog的版面與新增文章等等基本功能，對於開發者來說用別人的系統多少會有種綁手綁腳的感覺，相較於使用介面，我更喜歡直接面對程式碼，只要我願意花時間去看code，想要什麼功能都能自己想辦法弄出來，這種踏實感在我卡關並懷疑自己是不是時間太多的時候，可以起到很好的激勵效果。</p>
+<p>以往寫blog都使用線上服務，雖然功能都很完善，但總找不到一個所有要求都符合自己需求的平台，對於開發者來說，用別人的系統多少會有種綁手綁腳的感覺，相較於使用介面，我更喜歡直接面對程式碼，只要我願意花時間去看code，想要什麼功能都能自己想辦法弄出來，這種踏實感在我卡關並懷疑自己是不是時間太多的時候，可以起到很好的激勵效果。</p>
 <h3 id="hugo">Hugo</h3>
+<p>與曾經使用過的任何內容管理系統不同，不需要後台介面與資料庫，Hugo是一個開放原始碼的框架工具，可以快速生成一個靜態網站，甚至不需要有資訊背景，讓使用者專注在文章撰寫上，因為Hugo本身是用Go開發，在轉換與打包成靜態網站的速度相較於其他工具快上很多。</p>
+<p>架站部分，只要選擇任一網頁伺服器，簡單的將打包好的程式碼放上去就好，而也因為是靜態網站，不需要和後端同步資料或是動態渲染頁面資料，部署後直接可以被瀏覽器存取，SEO與速度方面相較於動態網站更佔優勢，靜態頁面也可以方便的部署CDN，加速網站連線速度。</p>
 <h3 id="solution">Solution</h3>
+<p>由於github上提供了免費的靜態檔案伺服器，可以搭配hugo成為自架blog的完整解決方案，未來更新文章與blog設定時也能用git來做控管，整個自架步驟將會照著以下流程：</p>
+<ol>
+<li>安裝hugo</li>
+<li>新建一個網站模板</li>
+<li>挑選theme後下載與套用</li>
+<li>新增文章與測試</li>
+<li>git新增repo</li>
+<li>github新增repo</li>
+<li>push打包後的靜態檔</li>
+<li>設定github連結頁面</li>
+<li>大功告成檢視結果</li>
+</ol>
+<p>以下是本篇中會使用到的環境與工具，其中會需要對Git有最初步的認識與使用經驗。(以下工具皆為跨平台，其他作業系統也可以使用)</p>
 <ul>
 <li>
 <h5 id="local">Local</h5>
 <ul>
-<li>macOS</li>
-<li>Typora Editor</li>
-<li>Git</li>
-<li>Hugo</li>
+<li>macOS：本篇中使用的作業系統</li>
+<li>Typora Editor：Markdown編輯器，可自行替換</li>
+<li>Git：需自行下載安裝</li>
+<li>Hugo：本篇主要使用的打包工具</li>
+<li>Go：需自行下載安裝</li>
 </ul>
 </li>
 <li>
 <h5 id="site">Site</h5>
 <ul>
-<li>Github</li>
-<li>Optional
-<ul>
-<li>domain name registrar</li>
-<li>ssl</li>
-</ul>
-</li>
+<li>Github：需有登入帳號</li>
 </ul>
 </li>
 </ul>
 <h3 id="start">Start</h3>
-<h5 id="hugobuild-from-source-code">Hugo：build from source code</h5>
+<h5 id="一安裝hugo">一、安裝Hugo</h5>
+<ul>
+<li>build from source code</li>
+</ul>
 
 
   
@@ -341,6 +356,332 @@ hugo help
     
   </div>
 </figure>
+
+<ul>
+<li>安裝方式有很多種，也可透過官方提供編譯後的binary檔直接使用，詳細可參考<a href="https://gohugo.io/getting-started/installing/#quick-install">這裡</a>。</li>
+</ul>
+<h5 id="二新建一個網站模板">二、新建一個網站模板</h5>
+<ul>
+<li>此步驟將會在當前目錄底下建立一個blog資料夾，並於其中建立所需檔案。</li>
+</ul>
+
+
+  
+  
+  
+  
+  
+
+  
+  
+  
+  
+  
+
+
+  
+    
+  
+  
+
+<figure class="codeblock codeblock--tabbed">
+  <figcaption>
+    
+      <span>terminal</span>
+    
+    <ul class="tabs">
+      
+        <li class="tab active">shell</li>
+      
+        <li class="tab ">output</li>
+      
+    </ul>
+  </figcaption>
+  <div class="tabs-content">
+    
+      
+      <figure class="highlight language-shell shell" style="display: block;">
+        <table>
+          <tbody>
+            <tr>
+              <td class="gutter">
+                <pre><span>1</span><br><span>2</span><br></pre>
+              </td>
+              <td class="code">
+                <pre class="code-highlight language-shell shell"><code class="shell">hugo new site ./blog
+cd blog</code></pre>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </figure>
+    
+      
+      <figure class="highlight language-output output" style="display: none;">
+        <table>
+          <tbody>
+            <tr>
+              <td class="gutter">
+                <pre><span>1</span><br><span>2</span><br><span>3</span><br><span>4</span><br><span>5</span><br><span>6</span><br><span>7</span><br><span>8</span><br><span>9</span><br><span>10</span><br><span>11</span><br><span>12</span><br></pre>
+              </td>
+              <td class="code">
+                <pre class="code-highlight language-output output"><code class="output">Congratulations! Your new Hugo site is created in /Users/howsin/Project/demo/blog.
+
+Just a few more steps and you&#39;re ready to go:
+
+1. Download a theme into the same-named folder.
+   Choose a theme from https://themes.gohugo.io/ or
+   create your own with the &#34;hugo new theme &lt;THEMENAME&gt;&#34; command.
+2. Perhaps you want to add some content. You can add single files
+   with &#34;hugo new &lt;SECTIONNAME&gt;/&lt;FILENAME&gt;.&lt;FORMAT&gt;&#34;.
+3. Start the built-in live server via &#34;hugo server&#34;.
+
+Visit https://gohugo.io/ for quickstart guide and full documentation.</code></pre>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </figure>
+    
+  </div>
+</figure>
+
+<h5 id="三挑選theme後下載與套用">三、挑選theme後下載與套用</h5>
+<ul>
+<li>由於新建好的網站中預設是沒有theme的，這時最快的方法就是到<a href="https://themes.gohugo.io/">官網</a>中挑選。</li>
+<li>依據挑選，不同的theme會大致介紹安裝方式與一些theme本身的設定，詳細請參考theme本身介紹頁面。</li>
+<li>下方使用<a href="https://themes.gohugo.io/themes/hugo-theme-m10c/">m10c</a>作為本篇範例，在進入上一步驟新增的網站資料夾後，依據theme頁面的步驟下載。</li>
+</ul>
+
+
+  
+  
+  
+  
+  
+
+  
+  
+  
+  
+  
+
+
+  
+    
+  
+  
+
+<figure class="codeblock codeblock--tabbed">
+  <figcaption>
+    
+      <span>terminal</span>
+    
+    <ul class="tabs">
+      
+        <li class="tab active">shell</li>
+      
+        <li class="tab ">output</li>
+      
+    </ul>
+  </figcaption>
+  <div class="tabs-content">
+    
+      
+      <figure class="highlight language-shell shell" style="display: block;">
+        <table>
+          <tbody>
+            <tr>
+              <td class="gutter">
+                <pre><span>1</span><br></pre>
+              </td>
+              <td class="code">
+                <pre class="code-highlight language-shell shell"><code class="shell">git clone https://github.com/vaga/hugo-theme-m10c.git themes/m10c</code></pre>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </figure>
+    
+      
+      <figure class="highlight language-output output" style="display: none;">
+        <table>
+          <tbody>
+            <tr>
+              <td class="gutter">
+                <pre><span>1</span><br><span>2</span><br><span>3</span><br><span>4</span><br><span>5</span><br><span>6</span><br><span>7</span><br></pre>
+              </td>
+              <td class="code">
+                <pre class="code-highlight language-output output"><code class="output">Cloning into &#39;themes/m10c&#39;...
+remote: Enumerating objects: 397, done.
+remote: Counting objects: 100% (17/17), done.
+remote: Compressing objects: 100% (16/16), done.
+remote: Total 397 (delta 2), reused 3 (delta 0), pack-reused 380
+Receiving objects: 100% (397/397), 914.77 KiB | 2.98 MiB/s, done.
+Resolving deltas: 100% (142/142), done.</code></pre>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </figure>
+    
+  </div>
+</figure>
+
+<ul>
+<li>此時themes資料夾中會存在下載好的樣式</li>
+<li>編輯blog中的 <code>config.toml</code>，加入<code>theme=&quot;m10c&quot;</code></li>
+</ul>
+
+
+  
+  
+  
+  
+  
+
+
+  
+    
+  
+  
+
+<figure class="codeblock codeblock--tabbed">
+  <figcaption>
+    
+      <span>config.toml</span>
+    
+    <ul class="tabs">
+      
+        <li class="tab active">toml</li>
+      
+    </ul>
+  </figcaption>
+  <div class="tabs-content">
+    
+      
+      <figure class="highlight language-toml toml" style="display: block;">
+        <table>
+          <tbody>
+            <tr>
+              <td class="gutter">
+                <pre><span>1</span><br><span>2</span><br><span>3</span><br><span>4</span><br></pre>
+              </td>
+              <td class="code">
+                <pre class="code-highlight language-toml toml"><code class="toml">baseURL = &#39;http://example.org/&#39;
+languageCode = &#39;en-us&#39;
+title = &#39;My New Hugo Site&#39;
+theme=&#34;m10c&#34;</code></pre>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </figure>
+    
+  </div>
+</figure>
+
+<h5 id="四新增文章與測試">四、新增文章與測試</h5>
+<ul>
+<li>做完上一個步驟後，已經有了最初步的網站，這時可以先打包測試後觀察結果</li>
+</ul>
+
+
+  
+  
+  
+  
+  
+
+  
+  
+  
+  
+  
+
+
+  
+    
+  
+  
+
+<figure class="codeblock codeblock--tabbed">
+  <figcaption>
+    
+      <span>terminal</span>
+    
+    <ul class="tabs">
+      
+        <li class="tab active">shell</li>
+      
+        <li class="tab ">output</li>
+      
+    </ul>
+  </figcaption>
+  <div class="tabs-content">
+    
+      
+      <figure class="highlight language-shell shell" style="display: block;">
+        <table>
+          <tbody>
+            <tr>
+              <td class="gutter">
+                <pre><span>1</span><br></pre>
+              </td>
+              <td class="code">
+                <pre class="code-highlight language-shell shell"><code class="shell">hugo server</code></pre>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </figure>
+    
+      
+      <figure class="highlight language-output output" style="display: none;">
+        <table>
+          <tbody>
+            <tr>
+              <td class="gutter">
+                <pre><span>1</span><br><span>2</span><br><span>3</span><br><span>4</span><br><span>5</span><br><span>6</span><br><span>7</span><br><span>8</span><br><span>9</span><br><span>10</span><br><span>11</span><br><span>12</span><br><span>13</span><br><span>14</span><br><span>15</span><br><span>16</span><br><span>17</span><br><span>18</span><br><span>19</span><br><span>20</span><br><span>21</span><br><span>22</span><br></pre>
+              </td>
+              <td class="code">
+                <pre class="code-highlight language-output output"><code class="output">Start building sites … 
+hugo v0.89.0-DEV darwin/amd64 BuildDate=unknown
+
+                   | EN  
+-------------------&#43;-----
+  Pages            |  7  
+  Paginator pages  |  0  
+  Non-page files   |  0  
+  Static files     |  1  
+  Processed images |  0  
+  Aliases          |  1  
+  Sitemaps         |  1  
+  Cleaned          |  0  
+
+Built in 12 ms
+Watching for changes in /Users/howsin/Project/demo/blog/{archetypes,content,data,layouts,static,themes}
+Watching for config changes in /Users/howsin/Project/demo/blog/config.toml
+Environment: &#34;development&#34;
+Serving pages from memory
+Running in Fast Render Mode. For full rebuilds on change: hugo server --disableFastRender
+Web Server is available at http://localhost:1313/ (bind address 127.0.0.1)
+Press Ctrl&#43;C to stop</code></pre>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </figure>
+    
+  </div>
+</figure>
+
+<ul>
+<li>
+<p>這時直接在瀏覽器中輸入 http://localhost:1313/ 觀察測試結果，可以看到輸出後的畫面</p>
+<p><img src="images/hugo/demo.png" alt="Result"></p>
+</li>
+</ul>
               
 
             </div>
@@ -353,6 +694,8 @@ hugo help
                   <div class="post-footer-tags">
                     <span class="text-color-light text-small">TAGGED IN</span><br/>
                     
+  <a class="tag tag--primary tag--small" href="https://howsin.github.io/blog/tags/tool/">tool</a>
+
   <a class="tag tag--primary tag--small" href="https://howsin.github.io/blog/tags/other/">other</a>
 
                   </div>
@@ -366,7 +709,7 @@ hugo help
           
             <li class="post-action">
               
-                <a class="post-action-btn btn btn--disabled">
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://howsin.github.io/blog/post/aws-cloudfront/" data-tooltip="Aws Cloudfront" aria-label="NEXT: Aws Cloudfront">
               
                   <i class="fa fa-angle-left"></i>
                   <span class="hide-xs hide-sm text-small icon-ml">NEXT</span>
@@ -473,7 +816,7 @@ hugo help
           
             <li class="post-action">
               
-                <a class="post-action-btn btn btn--disabled">
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://howsin.github.io/blog/post/aws-cloudfront/" data-tooltip="Aws Cloudfront" aria-label="NEXT: Aws Cloudfront">
               
                   <i class="fa fa-angle-left"></i>
                   <span class="hide-xs hide-sm text-small icon-ml">NEXT</span>
