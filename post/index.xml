@@ -6,7 +6,30 @@
     <description>Recent content in Posts on Howsin&#39;s Note</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 07 Sep 2021 16:37:47 +0800</lastBuildDate><atom:link href="https://howsin.github.io/blog/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 24 Sep 2021 12:30:17 +0800</lastBuildDate><atom:link href="https://howsin.github.io/blog/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Grpc官方教學翻譯</title>
+      <link>https://howsin.github.io/blog/post/grpc/</link>
+      <pubDate>Fri, 24 Sep 2021 12:30:17 +0800</pubDate>
+      
+      <guid>https://howsin.github.io/blog/post/grpc/</guid>
+      <description>&lt;p&gt;Java中的gRPC基礎教學介紹&lt;/p&gt;
+&lt;p&gt;本文翻譯自grpc官方教學，原文請參考&lt;a href=&#34;https://grpc.io/docs/languages/java/basics/&#34;&gt;此處&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;本教學向Java開發者介紹如何使用gRPC&lt;/p&gt;
+&lt;p&gt;在經過此範例後，你將學會：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;在 &lt;code&gt;.proto&lt;/code&gt; 中定義一個服務&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;用 &lt;code&gt;protocol buffer compiler&lt;/code&gt; 建立一個伺服器與用戶端&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;使用 &lt;code&gt;Java gRPC API &lt;/code&gt;為你的服務建立一個簡單的伺服器端與用戶端&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    
     <item>
       <title>使用hugo於github上自架blog</title>
       <link>https://howsin.github.io/blog/post/hello-hugo/</link>

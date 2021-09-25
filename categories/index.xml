@@ -5,6 +5,16 @@
     <link>https://howsin.github.io/blog/categories/</link>
     <description>Recent content in Categories on Howsin&#39;s Note</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language><atom:link href="https://howsin.github.io/blog/categories/index.xml" rel="self" type="application/rss+xml" />
+    <language>en-us</language>
+    <lastBuildDate>Fri, 24 Sep 2021 12:30:17 +0800</lastBuildDate><atom:link href="https://howsin.github.io/blog/categories/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>gRPC</title>
+      <link>https://howsin.github.io/blog/categories/grpc/</link>
+      <pubDate>Fri, 24 Sep 2021 12:30:17 +0800</pubDate>
+      
+      <guid>https://howsin.github.io/blog/categories/grpc/</guid>
+      <description></description>
+    </item>
+    
   </channel>
 </rss>

@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    
+    <script type="application/ld+json">
+
+{  
+  "@context":"http://schema.org",
+  "@type":"Website",
+  "@id":"https:\/\/howsin.github.io\/blog\/",
+  "author": {
+    "@type": "Person",
+    "name": "Howsin",
+    
+    "image": "https://www.gravatar.com/avatar/4d97c06427794554df76b798877052a0"
+    
+  },
+  "name":"Howsin\u0027s Note",
+  "description":"\u003cp\u003eJava中的gRPC基礎教學介紹\u003c\/p\u003e\n\u003cp\u003e本文翻譯自grpc官方教學，原文請參考\u003ca href=\u0022https:\/\/grpc.io\/docs\/languages\/java\/basics\/\u0022\u003e此處\u003c\/a\u003e\u003c\/p\u003e\n\u003cp\u003e本教學向Java開發者介紹如何使用gRPC\u003c\/p\u003e\n\u003cp\u003e在經過此範例後，你將學會：\u003c\/p\u003e\n\u003cul\u003e\n\u003cli\u003e\n\u003cp\u003e在 \u003ccode\u003e.proto\u003c\/code\u003e 中定義一個服務\u003c\/p\u003e\n\u003c\/li\u003e\n\u003cli\u003e\n\u003cp\u003e用 \u003ccode\u003eprotocol buffer compiler\u003c\/code\u003e 建立一個伺服器與用戶端\u003c\/p\u003e\n\u003c\/li\u003e\n\u003cli\u003e\n\u003cp\u003e使用 \u003ccode\u003eJava gRPC API \u003c\/code\u003e為你的服務建立一個簡單的伺服器端與用戶端\u003c\/p\u003e\n\u003c\/li\u003e\n\u003c\/ul\u003e",
+  "url":"https:\/\/howsin.github.io\/blog\/post\/grpc\/",
+  "keywords":"[]"
+}
+
+</script>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Hugo 0.89.0-DEV with theme Tranquilpeak 0.5.1-BETA">
+<meta name="author" content="Howsin">
+<meta name="keywords" content="">
+<meta name="description" content="Java中的gRPC基礎教學介紹
+本文翻譯自grpc官方教學，原文請參考此處
+本教學向Java開發者介紹如何使用gRPC
+在經過此範例後，你將學會：
+
+
+在 .proto 中定義一個服務
+
+
+用 protocol buffer compiler 建立一個伺服器與用戶端
+
+
+使用 Java gRPC API 為你的服務建立一個簡單的伺服器端與用戶端
+
+">
+
+
+<meta property="og:description" content="Java中的gRPC基礎教學介紹
+本文翻譯自grpc官方教學，原文請參考此處
+本教學向Java開發者介紹如何使用gRPC
+在經過此範例後，你將學會：
+
+
+在 .proto 中定義一個服務
+
+
+用 protocol buffer compiler 建立一個伺服器與用戶端
+
+
+使用 Java gRPC API 為你的服務建立一個簡單的伺服器端與用戶端
+
+">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Grpc官方教學翻譯">
+<meta name="twitter:title" content="Grpc官方教學翻譯">
+<meta property="og:url" content="https://howsin.github.io/blog/post/grpc/">
+<meta property="twitter:url" content="https://howsin.github.io/blog/post/grpc/">
+<meta property="og:site_name" content="Howsin&#39;s Note">
+<meta property="og:description" content="Java中的gRPC基礎教學介紹
+本文翻譯自grpc官方教學，原文請參考此處
+本教學向Java開發者介紹如何使用gRPC
+在經過此範例後，你將學會：
+
+
+在 .proto 中定義一個服務
+
+
+用 protocol buffer compiler 建立一個伺服器與用戶端
+
+
+使用 Java gRPC API 為你的服務建立一個簡單的伺服器端與用戶端
+
+">
+<meta name="twitter:description" content="Java中的gRPC基礎教學介紹
+本文翻譯自grpc官方教學，原文請參考此處
+本教學向Java開發者介紹如何使用gRPC
+在經過此範例後，你將學會：
+
+
+在 .proto 中定義一個服務
+
+
+用 protocol buffer compiler 建立一個伺服器與用戶端
+
+
+使用 Java gRPC API 為你的服務建立一個簡單的伺服器端與用戶端
+
+">
+<meta property="og:locale" content="en-us">
+
+  
+    <meta property="article:published_time" content="2021-09-24T12:30:17">
+  
+  
+    <meta property="article:modified_time" content="2021-09-24T12:30:17">
+  
+  
+  
+    
+      <meta property="article:section" content="gRPC">
+    
+  
+  
+    
+      <meta property="article:tag" content="grpc">
+    
+      <meta property="article:tag" content="protobuf">
+    
+  
+
+
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+
+
+  <meta property="og:image" content="https://www.gravatar.com/avatar/4d97c06427794554df76b798877052a0?s=640">
+  <meta property="twitter:image" content="https://www.gravatar.com/avatar/4d97c06427794554df76b798877052a0?s=640">
+
+
+
+
+
+
+    <title>Grpc官方教學翻譯</title>
+
+    <link rel="icon" href="https://howsin.github.io/blog/favicon.png">
+    
+
+    
+
+    <link rel="canonical" href="https://howsin.github.io/blog/post/grpc/">
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha512-H9jrZiiopUdsLpg94A333EfumgUBpO9MdbxStdeITo+KEIMaNfHNvwyjjDJb+ERPaRS6DpyRlKbvPUasNItRyw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    
+    
+    <link rel="stylesheet" href="https://howsin.github.io/blog/css/style-2w2urpokyukbsouppglitcyxngrsa0pcm58rrm5mqo3ieqo6bkvr3cz9nvf.min.css" />
+    
+    
+
+    
+      
+    
+    
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="5">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://howsin.github.io/blog/" aria-label="Go to homepage">Howsin&#39;s Note</a>
+  </div>
+  
+    
+      <a class="header-right-picture "
+         href="https://howsin.github.io/blog/#about" aria-label="Open the link: /#about">
+    
+    
+    
+      
+        <img class="header-picture" src="https://www.gravatar.com/avatar/4d97c06427794554df76b798877052a0?s=90" alt="Author&#39;s picture" />
+      
+    
+    </a>
+  
+</header>
+
+      <nav id="sidebar" data-behavior="5">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://howsin.github.io/blog/#about" aria-label="Read more about the author">
+          <img class="sidebar-profile-picture" src="https://www.gravatar.com/avatar/4d97c06427794554df76b798877052a0?s=110" alt="Author&#39;s picture" />
+        </a>
+        <h4 class="sidebar-profile-name">Howsin</h4>
+        
+          <h5 class="sidebar-profile-bio">Software Engineer. Web Developer</h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://howsin.github.io/blog/" title="Home">
+    
+      <i class="sidebar-button-icon fas fa-lg fa-home" aria-hidden="true"></i>
+      
+      <span class="sidebar-button-desc">Home</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://howsin.github.io/blog/categories" title="Categories">
+    
+      <i class="sidebar-button-icon fas fa-lg fa-bookmark" aria-hidden="true"></i>
+      
+      <span class="sidebar-button-desc">Categories</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://howsin.github.io/blog/tags" title="Tags">
+    
+      <i class="sidebar-button-icon fas fa-lg fa-tags" aria-hidden="true"></i>
+      
+      <span class="sidebar-button-desc">Tags</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://howsin.github.io/blog/archives" title="Archives">
+    
+      <i class="sidebar-button-icon fas fa-lg fa-archive" aria-hidden="true"></i>
+      
+      <span class="sidebar-button-desc">Archives</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/howsin" target="_blank" rel="noopener" title="GitHub">
+    
+      <i class="sidebar-button-icon fab fa-lg fa-github" aria-hidden="true"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://howsin.github.io/blog/#about" title="About">
+    
+      <i class="sidebar-button-icon fas fa-lg fa-question" aria-hidden="true"></i>
+      
+      <span class="sidebar-button-desc">About</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+
+    </ul>
+  </div>
+</nav>
+
+      
+
+      <div id="main" data-behavior="5"
+        class="
+               hasCoverMetaIn
+               ">
+        <article class="post">
+          
+          
+            <div class="post-header main-content-wrap text-left">
+  
+    <h1 class="post-title">
+      Grpc官方教學翻譯
+    </h1>
+  
+  
+  <div class="postShorten-meta post-meta">
+    
+      <time datetime="2021-09-24T12:30:17&#43;08:00">
+        
+  September 24, 2021
+
+      </time>
+    
+    
+  
+  
+    <span>in</span>
+    
+      <a class="category-link" href="https://howsin.github.io/blog/categories/grpc">gRPC</a>
+    
+  
+
+  </div>
+
+</div>
+          
+          <div class="post-content markdown">
+            <div class="main-content-wrap">
+              <p>Java中的gRPC基礎教學介紹</p>
+<p>本文翻譯自grpc官方教學，原文請參考<a href="https://grpc.io/docs/languages/java/basics/">此處</a></p>
+<p>本教學向Java開發者介紹如何使用gRPC</p>
+<p>在經過此範例後，你將學會：</p>
+<ul>
+<li>
+<p>在 <code>.proto</code> 中定義一個服務</p>
+</li>
+<li>
+<p>用 <code>protocol buffer compiler</code> 建立一個伺服器與用戶端</p>
+</li>
+<li>
+<p>使用 <code>Java gRPC API </code>為你的服務建立一個簡單的伺服器端與用戶端</p>
+</li>
+</ul>
+<p>閱讀前假設讀者已經看過 <a href="https://grpc.io/docs/what-is-grpc/introduction/">Introduction to gRPC</a> 與熟悉 <a href="https://developers.google.com/protocol-buffers/docs/overview">protocol buffers</a>。注意，在本篇教學中的範例皆使用<a href="https://github.com/google/protobuf/releases">proto3</a>版本的<code>protocol buffers</code>，您可以在<a href="https://developers.google.com/protocol-buffers/docs/proto3">proto3 language guide</a> 與 <a href="https://developers.google.com/protocol-buffers/docs/reference/java-generated">Java generated code guide</a>中了解更多。</p>
+<h3 id="為什麼使用grpc">為什麼使用gRPC?</h3>
+<p>我們的範例是一個簡單的路線圖程式，它可以讓使用者取得路線上景點的詳細資訊、建立他們的、與伺服器和其餘使用者交換路線圖的交通狀況等等資訊。</p>
+<p>當使用gRPC，我們可以一次性的為服務定義好 <code>.proto</code> 並以此產生任何支援gRPC語言的用戶端與伺服器程式碼，以此執行在不論是大型資料中心還是您的個人電腦間的不同伺服器環境，以gRPC處理不同語言與環境之間所有複雜的溝通問題，使用<code>protocol buffers</code>我們也得益於其中的優勢，包含更有效率的序列化、簡單的介面定義語言與輕鬆的更新介面。</p>
+<p>註：IDL：Interface description language，介面定義語言。</p>
+<h3 id="範例程式碼與安裝">範例程式碼與安裝</h3>
+<p>本教學中使用到的程式碼請參考 <a href="https://github.com/grpc/grpc-java/tree/master/examples/src/main/java/io/grpc/examples/routeguide">routeguide</a>。若要下載範例，使用以下的指令將<code>grpc-java</code>中最後版本的程式碼下載下來：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ git clone -b v1.40.1 https://github.com/grpc/grpc-java.git
+</code></pre></div><p>接著切換當前目錄至 <code>grpc-java/examples</code>：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ cd grpc-java/examples
+</code></pre></div><h3 id="定義服務">定義服務</h3>
+<p>我們的第一個步驟(與您在 <a href="https://grpc.io/docs/what-is-grpc/introduction/">Introduction to gRPC</a>中讀到的一樣)是要用 <a href="https://developers.google.com/protocol-buffers/docs/overview">protocol buffers</a> 定義gRPC的服務與方法、請求與回應格式。您可以在<a href="https://github.com/grpc/grpc-java/blob/master/examples/src/main/proto/route_guide.proto">route_guide.proto</a>中看到完整的<code>.proto</code>檔。</p>
+<p>當我們要載範例中產生<code>Java</code> 程式碼，我們需要在<code>.proto</code>中指定<code>java_package</code>檔案選項：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-proto" data-lang="proto"><span style="color:#66d9ef">option</span> java_package <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;io.grpc.examples.routeguide&#34;</span>;<span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div><p>這用於指定我們產生Java類時其中的package，如果在 <code>.proto</code> 檔中沒有明確的給定 <code>java_package</code> 選項，預設將會使用的 <code>proto</code> 的<code>package</code>(透過指定 <code>package</code> 關鍵字)。然而，<code>proto</code> 的 <code>packages</code> 通常不是恰當的<code>Java</code> <code>packages</code>，因為 <code>proto</code> 的 <code>package</code> 不會使用反向的域名為開頭。如果我們從<code>.proto</code>中使用其他的語言產生程式碼，<code>java_package</code>選項將不會有作用。</p>
+<p>若要定義一個服務，我們在 <code>.proto</code> 檔裡使用一個特定的保留字 <code>service</code>：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-proto" data-lang="proto"><span style="color:#66d9ef">service</span> RouteGuide {<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>   <span style="color:#f92672">...</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>}<span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div><p>接著我們在服務定義中定義 <code>rpc</code> 方法，指定他們的請求與回應格式。gRPC讓你可以定義四種不同的服務方法，這四種方法皆有在 <code>RouteGuide</code> 服務中使用：</p>
+<ul>
+<li>
+<p>在 <em>simple RPC</em> 方法中，用戶端使用<code>stub</code>向伺服器請求並等待回應，就像一個普通的函式呼叫。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-proto" data-lang="proto"><span style="color:#75715e">// 給定一個位置獲得詳細資訊
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">rpc</span> GetFeature(Point) <span style="color:#66d9ef">returns</span> (Feature) {}<span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div></li>
+<li>
+<p>在 <em>server-side streaming RPC</em> 方法中，用戶端向伺服器發送一個請求並從伺服器返回中獲得一個讀取序列化訊息的串流。用戶端從返回的串流中讀取訊息直到沒有訊息。就像在範例中看到的，透過在<strong>回應</strong>類型中使用保留字 <code>stream</code> 指定服務使用 <em>server-side streaming RPC</em> 方法</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-proto" data-lang="proto"><span style="color:#75715e">// Obtains the Features available within the given Rectangle.  Results are
+</span><span style="color:#75715e">// streamed rather than returned at once (e.g. in a response message with a
+</span><span style="color:#75715e">// repeated field), as the rectangle may cover a large area and contain a
+</span><span style="color:#75715e">// huge number of features.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">rpc</span> ListFeatures(Rectangle) <span style="color:#66d9ef">returns</span> (stream Feature) {}<span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div></li>
+<li>
+<p>在 <em>client-side streaming RPC</em> 方法中，用戶端寫入一個序列化的訊息並傳送至伺服器，再次使用提供的串流。當用戶端完成訊息寫入，將會等待伺服器端讀取全部的訊息並返回結果。透過在<strong>請求</strong>類型中使用保留字 <code>stream</code> 指定服務使用 <em>client-side streaming RPC</em> 方法</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-proto" data-lang="proto"><span style="color:#75715e">// Accepts a stream of Points on a route being traversed, returning a
+</span><span style="color:#75715e">// RouteSummary when traversal is completed.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">rpc</span> RecordRoute(stream Point) <span style="color:#66d9ef">returns</span> (RouteSummary) {}<span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div></li>
+<li>
+<p>在 <em>bidirectional streaming RPC</em> 方法中，兩端都透過可讀可寫的串流傳送序列化的訊息。兩者的串流獨立運行，所以用戶端與伺服器端都可以以任何順序讀取與寫入：舉例來說，伺服器可以先等待收到所有的用戶端訊息後再寫入回應，或是改為讀取與寫入交替進行，以及一些其他的讀寫組合。在每個串流中將會保留訊息的順序。透過在<strong>請求與回應</strong>類型中皆使用保留字 <code>stream</code> 指定服務使用 <em>bidirectional streaming RPC</em> 方法</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-proto" data-lang="proto"><span style="color:#75715e">// Accepts a stream of RouteNotes sent while a route is being traversed,
+</span><span style="color:#75715e">// while receiving other RouteNotes (e.g. from other users).
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">rpc</span> RouteChat(stream RouteNote) <span style="color:#66d9ef">returns</span> (stream RouteNote) {}<span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div></li>
+</ul>
+<p>除了服務方法外，<code>.proto</code>檔也會含有protocol buffer 訊息類型的定義，以提供服務中所有使用到方法間的請求與回應，舉例來說，以下是<code>Point</code>的訊息類型：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-proto" data-lang="proto"><span style="color:#75715e">// Points are represented as latitude-longitude pairs in the E7 representation
+</span><span style="color:#75715e">// (degrees multiplied by 10**7 and rounded to the nearest integer).
+</span><span style="color:#75715e">// Latitudes should be in the range +/- 90 degrees and longitude should be in
+</span><span style="color:#75715e">// the range +/- 180 degrees (inclusive).
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">message</span> <span style="color:#a6e22e">Point</span> {<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  <span style="color:#66d9ef">int32</span> latitude <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  <span style="color:#66d9ef">int32</span> longitude <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>;<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>}<span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div><h3 id="產生用戶端與伺服器端的程式碼">產生用戶端與伺服器端的程式碼</h3>
+<p>接下來我們會需要從我們的 <code>.proto</code> 服務定義中產生gRPC用戶端與伺服器端的介面。我們將使用特定Java版本的protocol buffer編譯器 <code>protoc</code>。您需要使用 <a href="https://github.com/google/protobuf/releases">proto3</a> 編譯器(同時支援proto2與proto3語法)產生gRPC服務。</p>
+<p>當使用<code>Gradle</code>或<code>Maven</code>，<code>protoc</code>可以產生必要的程式碼以建構服務。您可以參考<a href="https://github.com/grpc/grpc-java/blob/master/README.md">grpc-java README</a>中的描述並從自身的<code>.proto</code>檔中產生程式碼。</p>
+<p>以下的Java類是從服務定義中產生的：</p>
+<ul>
+<li><code>Feature.java</code>, <code>Point.java</code>, <code>Rectangle.java</code>和其餘的類皆含有所有的protocol buffer程式碼，可從發送、序列化與接收需求與回應的訊息類型</li>
+<li><code>RouteGuideGrpc.java</code>中含有(以及一些其餘有用的程式碼)：
+<ul>
+<li>一個提供給 <code>RouteGuide</code> 伺服器實作的基本類<code>RouteGuideGrpc.RouteGuideImplBase</code>， <code>RouteGuide</code>服務中擁有所有的方法定義</li>
+<li><em>stub</em> 類，提供用戶端與 <code>RouteGuide</code> 伺服器溝通</li>
+</ul>
+</li>
+</ul>
+<h3 id="建立伺服器">建立伺服器</h3>
+<p>首先探討如何建立 <code>RouteGuide</code> 伺服器。如果您只關注建立gRPC用戶端，可以跳過本章節後直接閱讀<a href="https://grpc.io/docs/languages/java/basics/#client">Creating the client</a> (儘管你可能也對建立伺服器有興趣)</p>
+<p>在此將建立 <code>RouteGuide</code> 服務的步驟分為兩大部分：</p>
+<ul>
+<li>複寫由服務定義產生出來的基本類：為服務建立實際的工作</li>
+<li>執行一個gRPC伺服器以監聽用戶端的需求並返回服務回應</li>
+</ul>
+<p>您可以在 <a href="https://github.com/grpc/grpc-java/blob/master/examples/src/main/java/io/grpc/examples/routeguide/RouteGuideServer.java">RouteGuideServer.java</a>中找到我們的 <code>RouteGuide</code> 伺服器範例。接著讓我們深入探討他是如何運作的。</p>
+<h3 id="實作-routeguide">實作 RouteGuide</h3>
+<p>如同您所看到的，我們的伺服器有一個類 <code>RouteGuideService</code> 繼承了被產生出來的 <code>RouteGuideGrpc.RouteGuideImplBase</code> 抽象類：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">RouteGuideService</span> <span style="color:#66d9ef">extends</span> RouteGuideGrpc<span style="color:#f92672">.</span><span style="color:#a6e22e">RouteGuideImplBase</span> <span style="color:#f92672">{</span>
+<span style="color:#f92672">...</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><h4 id="simple-rpc">Simple RPC</h4>
+<p><code>RouteGuideService</code> 中實作了所有服務需要的方法。讓我們先從最簡單的 <code>GetFeature()</code>方法開始， <code>GetFeature()</code>的作用是從用戶端接收 <code>Point</code> 並以此取得對應的  <code>Feature</code> 訊息</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> Collection<span style="color:#f92672">&lt;</span>Feature<span style="color:#f92672">&gt;</span> features<span style="color:#f92672">;</span>
+  
+<span style="color:#a6e22e">@Override</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">getFeature</span><span style="color:#f92672">(</span>Point request<span style="color:#f92672">,</span> StreamObserver<span style="color:#f92672">&lt;</span>Feature<span style="color:#f92672">&gt;</span> responseObserver<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+  responseObserver<span style="color:#f92672">.</span><span style="color:#a6e22e">onNext</span><span style="color:#f92672">(</span>checkFeature<span style="color:#f92672">(</span>request<span style="color:#f92672">));</span>
+  responseObserver<span style="color:#f92672">.</span><span style="color:#a6e22e">onCompleted</span><span style="color:#f92672">();</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#f92672">...</span>
+
+<span style="color:#66d9ef">private</span> Feature <span style="color:#a6e22e">checkFeature</span><span style="color:#f92672">(</span>Point location<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+  <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span>Feature feature <span style="color:#f92672">:</span> features<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>feature<span style="color:#f92672">.</span><span style="color:#a6e22e">getLocation</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getLatitude</span><span style="color:#f92672">()</span> <span style="color:#f92672">==</span> location<span style="color:#f92672">.</span><span style="color:#a6e22e">getLatitude</span><span style="color:#f92672">()</span>
+        <span style="color:#f92672">&amp;&amp;</span> feature<span style="color:#f92672">.</span><span style="color:#a6e22e">getLocation</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getLongitude</span><span style="color:#f92672">()</span> <span style="color:#f92672">==</span> location<span style="color:#f92672">.</span><span style="color:#a6e22e">getLongitude</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+      <span style="color:#66d9ef">return</span> feature<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+  <span style="color:#f92672">}</span>
+
+  <span style="color:#75715e">// No feature was found, return an unnamed feature.
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">return</span> Feature<span style="color:#f92672">.</span><span style="color:#a6e22e">newBuilder</span><span style="color:#f92672">().</span><span style="color:#a6e22e">setName</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#f92672">).</span><span style="color:#a6e22e">setLocation</span><span style="color:#f92672">(</span>location<span style="color:#f92672">).</span><span style="color:#a6e22e">build</span><span style="color:#f92672">();</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>在 <code>getFeature()</code> 方法中需要兩個參數：</p>
+<ul>
+<li><code>Point</code>: 用戶端請求</li>
+<li><code>StreamObserver&lt;Feature&gt;</code>: response observer，用於伺服器端呼叫並建立回應的特殊介面</li>
+</ul>
+<p>若要將回應返回至用戶端並完成此次呼叫：</p>
+<ol>
+<li>如同我們在服務定義中指定的建立並填入 <code>Feature</code> 回應物件以回應用戶端。在此範例中，我們使用獨立的私有方法 <code>checkFeature()</code> 。</li>
+<li>使用<code>response observer</code>的 <code>onNext()</code> 方法返回 <code>Feature</code>。</li>
+<li>使用<code>response observer</code>的 <code>onCompleted()</code> 方法指定已經完成此次呼叫。</li>
+</ol>
+<h4 id="server-side-streaming-rpc">Server-side streaming RPC</h4>
+<p>接著探討範例中眾多streaming RPCs的其中之一。 <code>listFeatures</code> 是一個 <code>server-side streaming RPC</code>，所以我們需要回傳多個 <code>Feature</code> 至用戶端。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> Collection<span style="color:#f92672">&lt;</span>Feature<span style="color:#f92672">&gt;</span> features<span style="color:#f92672">;</span>
+
+<span style="color:#f92672">...</span>
+
+<span style="color:#a6e22e">@Override</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">listFeatures</span><span style="color:#f92672">(</span>Rectangle request<span style="color:#f92672">,</span> StreamObserver<span style="color:#f92672">&lt;</span>Feature<span style="color:#f92672">&gt;</span> responseObserver<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+  <span style="color:#66d9ef">int</span> left <span style="color:#f92672">=</span> min<span style="color:#f92672">(</span>request<span style="color:#f92672">.</span><span style="color:#a6e22e">getLo</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getLongitude</span><span style="color:#f92672">(),</span> request<span style="color:#f92672">.</span><span style="color:#a6e22e">getHi</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getLongitude</span><span style="color:#f92672">());</span>
+  <span style="color:#66d9ef">int</span> right <span style="color:#f92672">=</span> max<span style="color:#f92672">(</span>request<span style="color:#f92672">.</span><span style="color:#a6e22e">getLo</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getLongitude</span><span style="color:#f92672">(),</span> request<span style="color:#f92672">.</span><span style="color:#a6e22e">getHi</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getLongitude</span><span style="color:#f92672">());</span>
+  <span style="color:#66d9ef">int</span> top <span style="color:#f92672">=</span> max<span style="color:#f92672">(</span>request<span style="color:#f92672">.</span><span style="color:#a6e22e">getLo</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getLatitude</span><span style="color:#f92672">(),</span> request<span style="color:#f92672">.</span><span style="color:#a6e22e">getHi</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getLatitude</span><span style="color:#f92672">());</span>
+  <span style="color:#66d9ef">int</span> bottom <span style="color:#f92672">=</span> min<span style="color:#f92672">(</span>request<span style="color:#f92672">.</span><span style="color:#a6e22e">getLo</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getLatitude</span><span style="color:#f92672">(),</span> request<span style="color:#f92672">.</span><span style="color:#a6e22e">getHi</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getLatitude</span><span style="color:#f92672">());</span>
+
+  <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span>Feature feature <span style="color:#f92672">:</span> features<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(!</span>RouteGuideUtil<span style="color:#f92672">.</span><span style="color:#a6e22e">exists</span><span style="color:#f92672">(</span>feature<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+      <span style="color:#66d9ef">continue</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">int</span> lat <span style="color:#f92672">=</span> feature<span style="color:#f92672">.</span><span style="color:#a6e22e">getLocation</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getLatitude</span><span style="color:#f92672">();</span>
+    <span style="color:#66d9ef">int</span> lon <span style="color:#f92672">=</span> feature<span style="color:#f92672">.</span><span style="color:#a6e22e">getLocation</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getLongitude</span><span style="color:#f92672">();</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>lon <span style="color:#f92672">&gt;=</span> left <span style="color:#f92672">&amp;&amp;</span> lon <span style="color:#f92672">&lt;=</span> right <span style="color:#f92672">&amp;&amp;</span> lat <span style="color:#f92672">&gt;=</span> bottom <span style="color:#f92672">&amp;&amp;</span> lat <span style="color:#f92672">&lt;=</span> top<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      responseObserver<span style="color:#f92672">.</span><span style="color:#a6e22e">onNext</span><span style="color:#f92672">(</span>feature<span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+  <span style="color:#f92672">}</span>
+  responseObserver<span style="color:#f92672">.</span><span style="color:#a6e22e">onCompleted</span><span style="color:#f92672">();</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>如同<code>simple RPC</code>，這個方法接收一個請求物件(用戶端想取得 <code>Rectangle</code>中的所有 <code>Feature</code>物件 )並由 <code>StreamObserver</code> 與一個 <code>StreamObserver</code> response observer。</p>
+<p>這次我們取得了很多需要回傳用戶端的 <code>Feature</code> 物件(在此案例中，我們從服務中定義的<code>features</code>集合中，選取那些在用戶端請求 <code>Rectangle</code>物件中的所有<code>Feature</code>)，並用response observer的 <code>onNext()</code>方法將他們逐一寫入回應。最後，如同<code>simple RPC</code>一樣，使用<code>response observer</code>的 <code>onCompleted()</code> 方法告訴gRPC已經完成寫入此次呼叫。</p>
+<h5 id="client-side-streaming-rpc">Client-side streaming RPC</h5>
+<p>接著讓我們探討更複雜的<code>client-side streaming</code>，在<code>recordRoute()</code>方法中，我們從用戶端中取得一連串的<code>Point</code>並返回包含這趟旅程所有資訊的一個單一物件 <code>RouteSummary</code> 。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Override</span>
+<span style="color:#66d9ef">public</span> StreamObserver<span style="color:#f92672">&lt;</span>Point<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">recordRoute</span><span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> StreamObserver<span style="color:#f92672">&lt;</span>RouteSummary<span style="color:#f92672">&gt;</span> responseObserver<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+  <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> StreamObserver<span style="color:#f92672">&lt;</span>Point<span style="color:#f92672">&gt;()</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">int</span> pointCount<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">int</span> featureCount<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">int</span> distance<span style="color:#f92672">;</span>
+    Point previous<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">long</span> startTime <span style="color:#f92672">=</span> System<span style="color:#f92672">.</span><span style="color:#a6e22e">nanoTime</span><span style="color:#f92672">();</span>
+
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onNext</span><span style="color:#f92672">(</span>Point point<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      pointCount<span style="color:#f92672">++;</span>
+      <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>RouteGuideUtil<span style="color:#f92672">.</span><span style="color:#a6e22e">exists</span><span style="color:#f92672">(</span>checkFeature<span style="color:#f92672">(</span>point<span style="color:#f92672">)))</span> <span style="color:#f92672">{</span>
+        featureCount<span style="color:#f92672">++;</span>
+      <span style="color:#f92672">}</span>
+      <span style="color:#75715e">// For each point after the first, add the incremental distance from the previous point
+</span><span style="color:#75715e"></span>      <span style="color:#75715e">// to the total distance value.
+</span><span style="color:#75715e"></span>      <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>previous <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        distance <span style="color:#f92672">+=</span> calcDistance<span style="color:#f92672">(</span>previous<span style="color:#f92672">,</span> point<span style="color:#f92672">);</span>
+      <span style="color:#f92672">}</span>
+      previous <span style="color:#f92672">=</span> point<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onError</span><span style="color:#f92672">(</span>Throwable t<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      logger<span style="color:#f92672">.</span><span style="color:#a6e22e">log</span><span style="color:#f92672">(</span>Level<span style="color:#f92672">.</span><span style="color:#a6e22e">WARNING</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;Encountered error in recordRoute&#34;</span><span style="color:#f92672">,</span> t<span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onCompleted</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+      <span style="color:#66d9ef">long</span> seconds <span style="color:#f92672">=</span> NANOSECONDS<span style="color:#f92672">.</span><span style="color:#a6e22e">toSeconds</span><span style="color:#f92672">(</span>System<span style="color:#f92672">.</span><span style="color:#a6e22e">nanoTime</span><span style="color:#f92672">()</span> <span style="color:#f92672">-</span> startTime<span style="color:#f92672">);</span>
+      responseObserver<span style="color:#f92672">.</span><span style="color:#a6e22e">onNext</span><span style="color:#f92672">(</span>RouteSummary<span style="color:#f92672">.</span><span style="color:#a6e22e">newBuilder</span><span style="color:#f92672">().</span><span style="color:#a6e22e">setPointCount</span><span style="color:#f92672">(</span>pointCount<span style="color:#f92672">)</span>
+          <span style="color:#f92672">.</span><span style="color:#a6e22e">setFeatureCount</span><span style="color:#f92672">(</span>featureCount<span style="color:#f92672">).</span><span style="color:#a6e22e">setDistance</span><span style="color:#f92672">(</span>distance<span style="color:#f92672">)</span>
+          <span style="color:#f92672">.</span><span style="color:#a6e22e">setElapsedTime</span><span style="color:#f92672">((</span><span style="color:#66d9ef">int</span><span style="color:#f92672">)</span> seconds<span style="color:#f92672">).</span><span style="color:#a6e22e">build</span><span style="color:#f92672">());</span>
+      responseObserver<span style="color:#f92672">.</span><span style="color:#a6e22e">onCompleted</span><span style="color:#f92672">();</span>
+    <span style="color:#f92672">}</span>
+  <span style="color:#f92672">};</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>如同你所看到的，就像上述提到的其他方法一樣，我們的方法中含有一個 <code>StreamObserver</code> response observer參數，但這次他回應一個 <code>StreamObserver</code> 使用戶端可以寫入需求中的所有<code>Point</code>。</p>
+<p>在這個方法的主體中，我們實例化了一個用於回應的匿名的<code>StreamObserver</code>，其中我們：</p>
+<ul>
+<li>複寫了 <code>onNext()</code> 方法，使其可以在每次用戶端寫入<code>Point</code>至串流時取得<code>features</code>與其餘資訊。</li>
+<li>複寫了 <code>onCompleted()</code> 方法(在<strong>用戶端</strong>完成寫入動作時呼叫)，使其可以填入並建造 <code>RouteSummary</code>。接著我們使用 <code>RouteSummary</code>呼叫了自身的response observer的方法 <code>onNext()</code>，並且呼叫他的 <code>onCompleted()</code> 方法來完成從伺服器端的呼叫。</li>
+</ul>
+<h5 id="bidirectional-streaming-rpc">Bidirectional streaming RPC</h5>
+<p>最後，讓我們以<code>RouteChat()</code>來探討<code> bidirectional streaming RPC</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Override</span>
+<span style="color:#66d9ef">public</span> StreamObserver<span style="color:#f92672">&lt;</span>RouteNote<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">routeChat</span><span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> StreamObserver<span style="color:#f92672">&lt;</span>RouteNote<span style="color:#f92672">&gt;</span> responseObserver<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+  <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> StreamObserver<span style="color:#f92672">&lt;</span>RouteNote<span style="color:#f92672">&gt;()</span> <span style="color:#f92672">{</span>
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onNext</span><span style="color:#f92672">(</span>RouteNote note<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      List<span style="color:#f92672">&lt;</span>RouteNote<span style="color:#f92672">&gt;</span> notes <span style="color:#f92672">=</span> getOrCreateNotes<span style="color:#f92672">(</span>note<span style="color:#f92672">.</span><span style="color:#a6e22e">getLocation</span><span style="color:#f92672">());</span>
+
+      <span style="color:#75715e">// Respond with all previous notes at this location.
+</span><span style="color:#75715e"></span>      <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span>RouteNote prevNote <span style="color:#f92672">:</span> notes<span style="color:#f92672">.</span><span style="color:#a6e22e">toArray</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> RouteNote<span style="color:#f92672">[</span>0<span style="color:#f92672">]))</span> <span style="color:#f92672">{</span>
+        responseObserver<span style="color:#f92672">.</span><span style="color:#a6e22e">onNext</span><span style="color:#f92672">(</span>prevNote<span style="color:#f92672">);</span>
+      <span style="color:#f92672">}</span>
+
+      <span style="color:#75715e">// Now add the new note to the list
+</span><span style="color:#75715e"></span>      notes<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>note<span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onError</span><span style="color:#f92672">(</span>Throwable t<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      logger<span style="color:#f92672">.</span><span style="color:#a6e22e">log</span><span style="color:#f92672">(</span>Level<span style="color:#f92672">.</span><span style="color:#a6e22e">WARNING</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;Encountered error in routeChat&#34;</span><span style="color:#f92672">,</span> t<span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onCompleted</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+      responseObserver<span style="color:#f92672">.</span><span style="color:#a6e22e">onCompleted</span><span style="color:#f92672">();</span>
+    <span style="color:#f92672">}</span>
+  <span style="color:#f92672">};</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>如同範例<code>client-side streaming</code>，我們同時取得與回覆<code>StreamObserver</code> response observer，只是這次我們是經由方法本身的response observer回傳訊息並且用戶端仍然在將訊息寫入他們的訊息串流。在這當中讀取與寫入的語法與 <code>client-streaming</code> 與 <code> server-streaming</code> 方法相同。儘管兩邊都會按照寫入的順序取得訊息，用戶端與伺服器端兩邊都能以任意順序讀取與寫入，但兩邊的串流操作是完全獨立的。</p>
+<h4 id="啟動伺服器">啟動伺服器</h4>
+<p>當我們將所有需要的方法實作完成後，同時需要啟動gRPC伺服器以便用戶端實際操作服務。以下的片段展示了如何以 <code>RouteGuide</code> 服務達成目的：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#a6e22e">RouteGuideServer</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> port<span style="color:#f92672">,</span> URL featureFile<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> IOException <span style="color:#f92672">{</span>
+  <span style="color:#66d9ef">this</span><span style="color:#f92672">(</span>ServerBuilder<span style="color:#f92672">.</span><span style="color:#a6e22e">forPort</span><span style="color:#f92672">(</span>port<span style="color:#f92672">),</span> port<span style="color:#f92672">,</span> RouteGuideUtil<span style="color:#f92672">.</span><span style="color:#a6e22e">parseFeatures</span><span style="color:#f92672">(</span>featureFile<span style="color:#f92672">));</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#75715e">/** Create a RouteGuide server using serverBuilder as a base and features as data. */</span>
+<span style="color:#66d9ef">public</span> <span style="color:#a6e22e">RouteGuideServer</span><span style="color:#f92672">(</span>ServerBuilder<span style="color:#f92672">&lt;?&gt;</span> serverBuilder<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> port<span style="color:#f92672">,</span> Collection<span style="color:#f92672">&lt;</span>Feature<span style="color:#f92672">&gt;</span> features<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+  <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">port</span> <span style="color:#f92672">=</span> port<span style="color:#f92672">;</span>
+  server <span style="color:#f92672">=</span> serverBuilder<span style="color:#f92672">.</span><span style="color:#a6e22e">addService</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> RouteGuideService<span style="color:#f92672">(</span>features<span style="color:#f92672">))</span>
+      <span style="color:#f92672">.</span><span style="color:#a6e22e">build</span><span style="color:#f92672">();</span>
+<span style="color:#f92672">}</span>
+<span style="color:#f92672">...</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">start</span><span style="color:#f92672">()</span> <span style="color:#66d9ef">throws</span> IOException <span style="color:#f92672">{</span>
+  server<span style="color:#f92672">.</span><span style="color:#a6e22e">start</span><span style="color:#f92672">();</span>
+  logger<span style="color:#f92672">.</span><span style="color:#a6e22e">info</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Server started, listening on &#34;</span> <span style="color:#f92672">+</span> port<span style="color:#f92672">);</span>
+ <span style="color:#f92672">...</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>如同你見到的，使用 <code>ServerBuilder</code> 建造並開始伺服器。</p>
+<p>若要達到此目的：</p>
+<ol>
+<li>使用建造者的 <code>forPort()</code> 方法指定一個地址與埠號以監聽用戶端的請求。</li>
+<li>建立一個服務實作 <code>RouteGuideService</code> 的實例並傳入建造者的 <code>addService()</code> 方法。</li>
+<li>呼叫建造者上的  <code>build()</code> 與 <code>start()</code>為我們的服務開始一個RPC伺服器。</li>
+</ol>
+<h3 id="建立用戶端">建立用戶端</h3>
+<p>在本章節中我們將會探討如何為 <code>RouteGuide</code> 服務建立用戶端。完整的用戶端程式碼可以參考<a href="https://github.com/grpc/grpc-java/blob/master/examples/src/main/java/io/grpc/examples/routeguide/RouteGuideClient.java">RouteGuideClient.java</a>。</p>
+<h4 id="實例化-stub">實例化 stub</h4>
+<p>若要呼叫服務的方法，首先我們需要建立一個 <code>stub</code>，更確切的說，是兩個 <code>stub</code>：</p>
+<ul>
+<li><em>blocking/synchronous</em> stub：RPC呼叫將會等待伺服器返回一個回應或是引發一個例外。</li>
+<li><em>non-blocking/asynchronous</em> stub將會以non-blocking的方式呼叫伺服器，使回應以非同步的方式返回。只能以非同步的 <code>stub</code> 進行特某些類型的串流呼叫。</li>
+</ul>
+<p>首先我們必須為 <code>stub</code> 建立一個gRPC通道，指定我們想要連線的伺服器端地址與埠號：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#a6e22e">RouteGuideClient</span><span style="color:#f92672">(</span>String host<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> port<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+  <span style="color:#66d9ef">this</span><span style="color:#f92672">(</span>ManagedChannelBuilder<span style="color:#f92672">.</span><span style="color:#a6e22e">forAddress</span><span style="color:#f92672">(</span>host<span style="color:#f92672">,</span> port<span style="color:#f92672">).</span><span style="color:#a6e22e">usePlaintext</span><span style="color:#f92672">());</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#75715e">/** Construct client for accessing RouteGuide server using the existing channel. */</span>
+<span style="color:#66d9ef">public</span> <span style="color:#a6e22e">RouteGuideClient</span><span style="color:#f92672">(</span>ManagedChannelBuilder<span style="color:#f92672">&lt;?&gt;</span> channelBuilder<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+  channel <span style="color:#f92672">=</span> channelBuilder<span style="color:#f92672">.</span><span style="color:#a6e22e">build</span><span style="color:#f92672">();</span>
+  blockingStub <span style="color:#f92672">=</span> RouteGuideGrpc<span style="color:#f92672">.</span><span style="color:#a6e22e">newBlockingStub</span><span style="color:#f92672">(</span>channel<span style="color:#f92672">);</span>
+  asyncStub <span style="color:#f92672">=</span> RouteGuideGrpc<span style="color:#f92672">.</span><span style="color:#a6e22e">newStub</span><span style="color:#f92672">(</span>channel<span style="color:#f92672">);</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>使用 <code>ManagedChannelBuilder</code> 來建立通道。</p>
+<p>現在我們可以使用此通道和 <code>proto</code> 產生的 <code>RouteGuideGrpc</code> 類提供的方法 <code>newStub</code> and <code>newBlockingStub</code> 來個別建立兩個 <code>stub</code>。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">blockingStub <span style="color:#f92672">=</span> RouteGuideGrpc<span style="color:#f92672">.</span><span style="color:#a6e22e">newBlockingStub</span><span style="color:#f92672">(</span>channel<span style="color:#f92672">);</span>
+asyncStub <span style="color:#f92672">=</span> RouteGuideGrpc<span style="color:#f92672">.</span><span style="color:#a6e22e">newStub</span><span style="color:#f92672">(</span>channel<span style="color:#f92672">);</span>
+</code></pre></div><h4 id="呼叫服務方法">呼叫服務方法</h4>
+<p>現在讓我們來探討如何呼叫服務提供的方法</p>
+<h5 id="simple-rpc-1">Simple RPC</h5>
+<p>使用 <code>blocking stub</code> 呼叫 <code>Simple RPC</code> <code>GetFeature</code> 就像直接呼叫一個本地端的方法。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">Point request <span style="color:#f92672">=</span> Point<span style="color:#f92672">.</span><span style="color:#a6e22e">newBuilder</span><span style="color:#f92672">().</span><span style="color:#a6e22e">setLatitude</span><span style="color:#f92672">(</span>lat<span style="color:#f92672">).</span><span style="color:#a6e22e">setLongitude</span><span style="color:#f92672">(</span>lon<span style="color:#f92672">).</span><span style="color:#a6e22e">build</span><span style="color:#f92672">();</span>
+Feature feature<span style="color:#f92672">;</span>
+<span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+  feature <span style="color:#f92672">=</span> blockingStub<span style="color:#f92672">.</span><span style="color:#a6e22e">getFeature</span><span style="color:#f92672">(</span>request<span style="color:#f92672">);</span>
+<span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>StatusRuntimeException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+  logger<span style="color:#f92672">.</span><span style="color:#a6e22e">log</span><span style="color:#f92672">(</span>Level<span style="color:#f92672">.</span><span style="color:#a6e22e">WARNING</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;RPC failed: {0}&#34;</span><span style="color:#f92672">,</span> e<span style="color:#f92672">.</span><span style="color:#a6e22e">getStatus</span><span style="color:#f92672">());</span>
+  <span style="color:#66d9ef">return</span><span style="color:#f92672">;</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>我們建立並填入一個 <code>protocol buffer object</code> 請求(在案例 <code>Point</code> 中)，傳送至 <code>blocking stub</code>中的 <code>getFeature()</code> 方法並且取得回傳的一個 <code>Feature</code>。</p>
+<p>如果發生了錯誤，將會編碼為單個<code>Status</code>，可以從 <code>StatusRuntimeException</code> 中取得。</p>
+<h5 id="server-side-streaming-rpc-1">Server-side streaming RPC</h5>
+<p>接著讓我們探討如何呼叫 <code>server-side streaming</code> <code>ListFeatures</code>，結果將返回地理性的 <code>Feature</code> 串流</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">Rectangle request <span style="color:#f92672">=</span>
+    Rectangle<span style="color:#f92672">.</span><span style="color:#a6e22e">newBuilder</span><span style="color:#f92672">()</span>
+        <span style="color:#f92672">.</span><span style="color:#a6e22e">setLo</span><span style="color:#f92672">(</span>Point<span style="color:#f92672">.</span><span style="color:#a6e22e">newBuilder</span><span style="color:#f92672">().</span><span style="color:#a6e22e">setLatitude</span><span style="color:#f92672">(</span>lowLat<span style="color:#f92672">).</span><span style="color:#a6e22e">setLongitude</span><span style="color:#f92672">(</span>lowLon<span style="color:#f92672">).</span><span style="color:#a6e22e">build</span><span style="color:#f92672">())</span>
+        <span style="color:#f92672">.</span><span style="color:#a6e22e">setHi</span><span style="color:#f92672">(</span>Point<span style="color:#f92672">.</span><span style="color:#a6e22e">newBuilder</span><span style="color:#f92672">().</span><span style="color:#a6e22e">setLatitude</span><span style="color:#f92672">(</span>hiLat<span style="color:#f92672">).</span><span style="color:#a6e22e">setLongitude</span><span style="color:#f92672">(</span>hiLon<span style="color:#f92672">).</span><span style="color:#a6e22e">build</span><span style="color:#f92672">()).</span><span style="color:#a6e22e">build</span><span style="color:#f92672">();</span>
+Iterator<span style="color:#f92672">&lt;</span>Feature<span style="color:#f92672">&gt;</span> features<span style="color:#f92672">;</span>
+<span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+  features <span style="color:#f92672">=</span> blockingStub<span style="color:#f92672">.</span><span style="color:#a6e22e">listFeatures</span><span style="color:#f92672">(</span>request<span style="color:#f92672">);</span>
+<span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>StatusRuntimeException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+  logger<span style="color:#f92672">.</span><span style="color:#a6e22e">log</span><span style="color:#f92672">(</span>Level<span style="color:#f92672">.</span><span style="color:#a6e22e">WARNING</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;RPC failed: {0}&#34;</span><span style="color:#f92672">,</span> e<span style="color:#f92672">.</span><span style="color:#a6e22e">getStatus</span><span style="color:#f92672">());</span>
+  <span style="color:#66d9ef">return</span><span style="color:#f92672">;</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>如你所見，這與剛剛提到的 <code>simple RPC</code> 非常相似，與之相反的是剛剛只返回一個單一的<code>Feature</code>，而此方法返回一個用戶端可以讀取所有 <code>Feature</code> 的  <code>Iterator</code> 。</p>
+<h5 id="client-side-streaming-rpc-1">Client-side streaming RPC</h5>
+<p>現在探討更為複雜的 <code>client-side streaming</code> 方法 <code>RecordRoute</code>，我們傳送一個 <code>Point</code> 串流至伺服器端並取得一個單一的 <code>RouteSummary</code>。在這個方法中，我們需要使用非同步的 <code>stub</code>。如果您已經讀過 <a href="https://grpc.io/docs/languages/java/basics/#server">Creating the server</a> ，這其中有些部分非常相似，非同步的串流RPC在兩端以相同的方式實作。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">recordRoute</span><span style="color:#f92672">(</span>List<span style="color:#f92672">&lt;</span>Feature<span style="color:#f92672">&gt;</span> features<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> numPoints<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> InterruptedException <span style="color:#f92672">{</span>
+  info<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;*** RecordRoute&#34;</span><span style="color:#f92672">);</span>
+  <span style="color:#66d9ef">final</span> CountDownLatch finishLatch <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> CountDownLatch<span style="color:#f92672">(</span>1<span style="color:#f92672">);</span>
+  StreamObserver<span style="color:#f92672">&lt;</span>RouteSummary<span style="color:#f92672">&gt;</span> responseObserver <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> StreamObserver<span style="color:#f92672">&lt;</span>RouteSummary<span style="color:#f92672">&gt;()</span> <span style="color:#f92672">{</span>
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onNext</span><span style="color:#f92672">(</span>RouteSummary summary<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      info<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Finished trip with {0} points. Passed {1} features. &#34;</span>
+          <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;Travelled {2} meters. It took {3} seconds.&#34;</span><span style="color:#f92672">,</span> summary<span style="color:#f92672">.</span><span style="color:#a6e22e">getPointCount</span><span style="color:#f92672">(),</span>
+          summary<span style="color:#f92672">.</span><span style="color:#a6e22e">getFeatureCount</span><span style="color:#f92672">(),</span> summary<span style="color:#f92672">.</span><span style="color:#a6e22e">getDistance</span><span style="color:#f92672">(),</span> summary<span style="color:#f92672">.</span><span style="color:#a6e22e">getElapsedTime</span><span style="color:#f92672">());</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onError</span><span style="color:#f92672">(</span>Throwable t<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      Status status <span style="color:#f92672">=</span> Status<span style="color:#f92672">.</span><span style="color:#a6e22e">fromThrowable</span><span style="color:#f92672">(</span>t<span style="color:#f92672">);</span>
+      logger<span style="color:#f92672">.</span><span style="color:#a6e22e">log</span><span style="color:#f92672">(</span>Level<span style="color:#f92672">.</span><span style="color:#a6e22e">WARNING</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;RecordRoute Failed: {0}&#34;</span><span style="color:#f92672">,</span> status<span style="color:#f92672">);</span>
+      finishLatch<span style="color:#f92672">.</span><span style="color:#a6e22e">countDown</span><span style="color:#f92672">();</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onCompleted</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+      info<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Finished RecordRoute&#34;</span><span style="color:#f92672">);</span>
+      finishLatch<span style="color:#f92672">.</span><span style="color:#a6e22e">countDown</span><span style="color:#f92672">();</span>
+    <span style="color:#f92672">}</span>
+  <span style="color:#f92672">};</span>
+
+  StreamObserver<span style="color:#f92672">&lt;</span>Point<span style="color:#f92672">&gt;</span> requestObserver <span style="color:#f92672">=</span> asyncStub<span style="color:#f92672">.</span><span style="color:#a6e22e">recordRoute</span><span style="color:#f92672">(</span>responseObserver<span style="color:#f92672">);</span>
+  <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+    <span style="color:#75715e">// Send numPoints points randomly selected from the features list.
+</span><span style="color:#75715e"></span>    Random rand <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Random<span style="color:#f92672">();</span>
+    <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span> i <span style="color:#f92672">&lt;</span> numPoints<span style="color:#f92672">;</span> <span style="color:#f92672">++</span>i<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      <span style="color:#66d9ef">int</span> index <span style="color:#f92672">=</span> rand<span style="color:#f92672">.</span><span style="color:#a6e22e">nextInt</span><span style="color:#f92672">(</span>features<span style="color:#f92672">.</span><span style="color:#a6e22e">size</span><span style="color:#f92672">());</span>
+      Point point <span style="color:#f92672">=</span> features<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>index<span style="color:#f92672">).</span><span style="color:#a6e22e">getLocation</span><span style="color:#f92672">();</span>
+      info<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Visiting point {0}, {1}&#34;</span><span style="color:#f92672">,</span> RouteGuideUtil<span style="color:#f92672">.</span><span style="color:#a6e22e">getLatitude</span><span style="color:#f92672">(</span>point<span style="color:#f92672">),</span>
+          RouteGuideUtil<span style="color:#f92672">.</span><span style="color:#a6e22e">getLongitude</span><span style="color:#f92672">(</span>point<span style="color:#f92672">));</span>
+      requestObserver<span style="color:#f92672">.</span><span style="color:#a6e22e">onNext</span><span style="color:#f92672">(</span>point<span style="color:#f92672">);</span>
+      <span style="color:#75715e">// Sleep for a bit before sending the next one.
+</span><span style="color:#75715e"></span>      Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">sleep</span><span style="color:#f92672">(</span>rand<span style="color:#f92672">.</span><span style="color:#a6e22e">nextInt</span><span style="color:#f92672">(</span>1000<span style="color:#f92672">)</span> <span style="color:#f92672">+</span> 500<span style="color:#f92672">);</span>
+      <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>finishLatch<span style="color:#f92672">.</span><span style="color:#a6e22e">getCount</span><span style="color:#f92672">()</span> <span style="color:#f92672">==</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#75715e">// RPC completed or errored before we finished sending.
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// Sending further requests won&#39;t error, but they will just be thrown away.
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">return</span><span style="color:#f92672">;</span>
+      <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+  <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>RuntimeException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#75715e">// Cancel RPC
+</span><span style="color:#75715e"></span>    requestObserver<span style="color:#f92672">.</span><span style="color:#a6e22e">onError</span><span style="color:#f92672">(</span>e<span style="color:#f92672">);</span>
+    <span style="color:#66d9ef">throw</span> e<span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+  <span style="color:#75715e">// Mark the end of requests
+</span><span style="color:#75715e"></span>  requestObserver<span style="color:#f92672">.</span><span style="color:#a6e22e">onCompleted</span><span style="color:#f92672">();</span>
+
+  <span style="color:#75715e">// Receiving happens asynchronously
+</span><span style="color:#75715e"></span>  finishLatch<span style="color:#f92672">.</span><span style="color:#a6e22e">await</span><span style="color:#f92672">(</span>1<span style="color:#f92672">,</span> TimeUnit<span style="color:#f92672">.</span><span style="color:#a6e22e">MINUTES</span><span style="color:#f92672">);</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>如你所見，若要呼叫此方法，我們需要建立一個 <code>StreamObserver</code>，其中實作了一個用來使伺服器端呼叫本身 <code>RouteSummary</code> 回應的特殊的介面，在 <code>StreamObserver</code> 中：</p>
+<ul>
+<li>複寫了 <code>onNext()</code> 方法，當伺服器寫入一個 <code>RouteSummary</code> 到訊息串流時，以此方法印出回傳的資訊。</li>
+<li>複寫了 <code>onCompleted()</code> 方法(當伺服器端已經完成此次呼叫中的運算後呼叫)，以減少一個<code>CountDownLatch</code>並以此檢查伺服器已完成寫入。</li>
+</ul>
+<p>我們接著將  <code>StreamObserver</code> 傳入非同步 <code>stub</code> 的 <code>recordRoute()</code> 方法並且取得我們自身的 <code>StreamObserver</code> 請求，寫入所有 <code>Point</code> 後傳送至伺服器端。當我們完成所有 <code>Point</code>的寫入後，使用請求中 <code>observer</code> 的 <code>onCompleted()</code> 方法來告訴gRPC我們已經完成了用戶端的寫入，當我們完成後，透過檢查 <code>CountDownLatch</code>來確認伺服器端已經運算完成。</p>
+<h5 id="bidirectional-streaming-rpc-1">Bidirectional streaming RPC</h5>
+<p>最後讓我們來探討 <code>bidirectional streaming RPC</code>  <code>RouteChat()</code>。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">routeChat</span><span style="color:#f92672">()</span> <span style="color:#66d9ef">throws</span> Exception <span style="color:#f92672">{</span>
+  info<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;*** RoutChat&#34;</span><span style="color:#f92672">);</span>
+  <span style="color:#66d9ef">final</span> CountDownLatch finishLatch <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> CountDownLatch<span style="color:#f92672">(</span>1<span style="color:#f92672">);</span>
+  StreamObserver<span style="color:#f92672">&lt;</span>RouteNote<span style="color:#f92672">&gt;</span> requestObserver <span style="color:#f92672">=</span>
+      asyncStub<span style="color:#f92672">.</span><span style="color:#a6e22e">routeChat</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> StreamObserver<span style="color:#f92672">&lt;</span>RouteNote<span style="color:#f92672">&gt;()</span> <span style="color:#f92672">{</span>
+        <span style="color:#a6e22e">@Override</span>
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onNext</span><span style="color:#f92672">(</span>RouteNote note<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+          info<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Got message \&#34;{0}\&#34; at {1}, {2}&#34;</span><span style="color:#f92672">,</span> note<span style="color:#f92672">.</span><span style="color:#a6e22e">getMessage</span><span style="color:#f92672">(),</span> note<span style="color:#f92672">.</span><span style="color:#a6e22e">getLocation</span><span style="color:#f92672">()</span>
+              <span style="color:#f92672">.</span><span style="color:#a6e22e">getLatitude</span><span style="color:#f92672">(),</span> note<span style="color:#f92672">.</span><span style="color:#a6e22e">getLocation</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getLongitude</span><span style="color:#f92672">());</span>
+        <span style="color:#f92672">}</span>
+
+        <span style="color:#a6e22e">@Override</span>
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onError</span><span style="color:#f92672">(</span>Throwable t<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+          Status status <span style="color:#f92672">=</span> Status<span style="color:#f92672">.</span><span style="color:#a6e22e">fromThrowable</span><span style="color:#f92672">(</span>t<span style="color:#f92672">);</span>
+          logger<span style="color:#f92672">.</span><span style="color:#a6e22e">log</span><span style="color:#f92672">(</span>Level<span style="color:#f92672">.</span><span style="color:#a6e22e">WARNING</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;RouteChat Failed: {0}&#34;</span><span style="color:#f92672">,</span> status<span style="color:#f92672">);</span>
+          finishLatch<span style="color:#f92672">.</span><span style="color:#a6e22e">countDown</span><span style="color:#f92672">();</span>
+        <span style="color:#f92672">}</span>
+
+        <span style="color:#a6e22e">@Override</span>
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onCompleted</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+          info<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Finished RouteChat&#34;</span><span style="color:#f92672">);</span>
+          finishLatch<span style="color:#f92672">.</span><span style="color:#a6e22e">countDown</span><span style="color:#f92672">();</span>
+        <span style="color:#f92672">}</span>
+      <span style="color:#f92672">});</span>
+
+  <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+    RouteNote<span style="color:#f92672">[]</span> requests <span style="color:#f92672">=</span>
+        <span style="color:#f92672">{</span>newNote<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;First message&#34;</span><span style="color:#f92672">,</span> 0<span style="color:#f92672">,</span> 0<span style="color:#f92672">),</span> newNote<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Second message&#34;</span><span style="color:#f92672">,</span> 0<span style="color:#f92672">,</span> 1<span style="color:#f92672">),</span>
+            newNote<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Third message&#34;</span><span style="color:#f92672">,</span> 1<span style="color:#f92672">,</span> 0<span style="color:#f92672">),</span> newNote<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Fourth message&#34;</span><span style="color:#f92672">,</span> 1<span style="color:#f92672">,</span> 1<span style="color:#f92672">)};</span>
+
+    <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span>RouteNote request <span style="color:#f92672">:</span> requests<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      info<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Sending message \&#34;{0}\&#34; at {1}, {2}&#34;</span><span style="color:#f92672">,</span> request<span style="color:#f92672">.</span><span style="color:#a6e22e">getMessage</span><span style="color:#f92672">(),</span> request<span style="color:#f92672">.</span><span style="color:#a6e22e">getLocation</span><span style="color:#f92672">()</span>
+          <span style="color:#f92672">.</span><span style="color:#a6e22e">getLatitude</span><span style="color:#f92672">(),</span> request<span style="color:#f92672">.</span><span style="color:#a6e22e">getLocation</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getLongitude</span><span style="color:#f92672">());</span>
+      requestObserver<span style="color:#f92672">.</span><span style="color:#a6e22e">onNext</span><span style="color:#f92672">(</span>request<span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+  <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>RuntimeException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#75715e">// Cancel RPC
+</span><span style="color:#75715e"></span>    requestObserver<span style="color:#f92672">.</span><span style="color:#a6e22e">onError</span><span style="color:#f92672">(</span>e<span style="color:#f92672">);</span>
+    <span style="color:#66d9ef">throw</span> e<span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+  <span style="color:#75715e">// Mark the end of requests
+</span><span style="color:#75715e"></span>  requestObserver<span style="color:#f92672">.</span><span style="color:#a6e22e">onCompleted</span><span style="color:#f92672">();</span>
+
+  <span style="color:#75715e">// Receiving happens asynchronously
+</span><span style="color:#75715e"></span>  finishLatch<span style="color:#f92672">.</span><span style="color:#a6e22e">await</span><span style="color:#f92672">(</span>1<span style="color:#f92672">,</span> TimeUnit<span style="color:#f92672">.</span><span style="color:#a6e22e">MINUTES</span><span style="color:#f92672">);</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>如同範例 <code>client-side streaming</code>一樣，我們同時取得與回傳一個response observer <code>StreamObserver</code>，與之不同的是當伺服器端仍在寫入訊息至他的訊息串流時，我們透過各自response observer的方法傳值。讀取與寫入的語法完全與剛剛的 <code>client-stream</code> 方法相同。雖然兩端都會同時照著當初各自寫入的順序取得另外一端的訊息，但用戶端與伺服器是以完全獨立的串流端操作讀取和寫入。</p>
+              
+
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">TAGGED IN</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://howsin.github.io/blog/tags/grpc/">grpc</a>
+
+  <a class="tag tag--primary tag--small" href="https://howsin.github.io/blog/tags/protobuf/">protobuf</a>
+
+                  </div>
+                
+              
+            
+            <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--disabled">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">NEXT</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://howsin.github.io/blog/post/hello-hugo/" data-tooltip="使用hugo於github上自架blog" aria-label="PREVIOUS: 使用hugo於github上自架blog">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">PREVIOUS</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions" aria-label="Share this post">
+            <i class="fa fa-share-alt" aria-hidden="true"></i>
+          </a>
+        </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://howsin.github.io/blog/post/grpc/" title="Share on %s Facebook" aria-label="Share on %s Facebook">
+              <i class="fab fa-facebook-square" aria-hidden="true"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://howsin.github.io/blog/post/grpc/" title="Share on %s Twitter" aria-label="Share on %s Twitter">
+              <i class="fab fa-twitter" aria-hidden="true"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https://howsin.github.io/blog/post/grpc/" title="Share on %s Google&#43;" aria-label="Share on %s Google&#43;">
+              <i class="fab fa-google-plus" aria-hidden="true"></i>
+            </a>
+          </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread" aria-label="Leave a comment">
+            <i class="far fa-comment"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#" aria-label="Back to top">
+        
+          <i class="fa fa-list" aria-hidden="true"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+            
+  
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+    <script type="text/javascript">
+      var disqus_config = function() {
+        this.page.url = 'https:\/\/howsin.github.io\/blog\/post\/grpc\/';
+        
+          this.page.identifier = '\/post\/grpc\/'
+        
+      };
+      (function() {
+        
+        
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+          document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+          return;
+        }
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        var disqus_shortname = 'hugo-tranquilpeak-theme';
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+  
+
+
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2021 Howsin. All Rights Reserved
+  </span>
+</footer>
+
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="5">
+        <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--disabled">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">NEXT</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://howsin.github.io/blog/post/hello-hugo/" data-tooltip="使用hugo於github上自架blog" aria-label="PREVIOUS: 使用hugo於github上自架blog">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">PREVIOUS</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions" aria-label="Share this post">
+            <i class="fa fa-share-alt" aria-hidden="true"></i>
+          </a>
+        </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://howsin.github.io/blog/post/grpc/" title="Share on %s Facebook" aria-label="Share on %s Facebook">
+              <i class="fab fa-facebook-square" aria-hidden="true"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://howsin.github.io/blog/post/grpc/" title="Share on %s Twitter" aria-label="Share on %s Twitter">
+              <i class="fab fa-twitter" aria-hidden="true"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https://howsin.github.io/blog/post/grpc/" title="Share on %s Google&#43;" aria-label="Share on %s Google&#43;">
+              <i class="fab fa-google-plus" aria-hidden="true"></i>
+            </a>
+          </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread" aria-label="Leave a comment">
+            <i class="far fa-comment"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#" aria-label="Back to top">
+        
+          <i class="fa fa-list" aria-hidden="true"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+      </div>
+      
+<div id="share-options-bar" class="share-options-bar" data-behavior="5">
+  <i id="btn-close-shareoptions" class="fa fa-times"></i>
+  <ul class="share-options">
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fhowsin.github.io%2Fblog%2Fpost%2Fgrpc%2F" aria-label="Share on %s Facebook">
+          <i class="fab fa-facebook-square" aria-hidden="true"></i><span>Share on Facebook</span>
+        </a>
+      </li>
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=https%3A%2F%2Fhowsin.github.io%2Fblog%2Fpost%2Fgrpc%2F" aria-label="Share on %s Twitter">
+          <i class="fab fa-twitter" aria-hidden="true"></i><span>Share on Twitter</span>
+        </a>
+      </li>
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=https%3A%2F%2Fhowsin.github.io%2Fblog%2Fpost%2Fgrpc%2F" aria-label="Share on %s Google&#43;">
+          <i class="fab fa-google-plus" aria-hidden="true"></i><span>Share on Google&#43;</span>
+        </a>
+      </li>
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+
+    </div>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-times"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://www.gravatar.com/avatar/4d97c06427794554df76b798877052a0?s=110" alt="Author&#39;s picture" />
+    
+    <h4 id="about-card-name">Howsin</h4>
+    
+      <div id="about-card-bio">Software Engineer. Web Developer</div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        Software Engineer
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker-alt"></i>
+        <br/>
+        Taiwan
+      </div>
+    
+  </div>
+</div>
+
+    
+
+    
+  
+    
+      <div id="cover" style="background-image:url('https://howsin.github.io/blog/images/cover-v1.2.0.jpg');"></div>
+    
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/highlight.min.js" integrity="sha512-z+/WWfyD5tccCukM4VvONpEtLmbAm5LDu7eKiyMQJ9m7OfPEDL7gENyDRL3Yfe8XAuGsS2fS4xSMnl6d30kqGQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha512-uURl+ZXMBrF4AwGaWmEetzrd+J5/8NRkWAvJx5sbPSSuOb0bZLqf+tOzniObO00BjHa/dD7gub9oCGMLPQHtQA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<script src="https://howsin.github.io/blog/js/script-8lglxdix2nqhalxxm2bujhkcc8cctdrd5o5axonwhfzx2zqrer5facyn8.min.js"></script>
+
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-gE8KAQyFIzV1C9+GZ8TKJHZS2s+n7EjNtC+IMRn1l5+WYJTHOODUM6JSjZhFhqXmc7bG8Av6XXpckA4tYhflnw==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/apache.min.js"></script>
+  
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-EWROca+bote+7Oaaar1F6y74iZj1r1F9rm/ly7o+/FwJopbBaWtsFDmaKoZDd3QiGU2pGacBirHJNivmGLYrow==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/go.min.js"></script>
+  
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-GDVzAn0wpx1yVtQsRWmFc6PhJiLBPdUic+h4GWgljBh904O3JU10fk9EKNpVyIoPqkFn54rgL2QBG4BmUTMpiQ==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/http.min.js"></script>
+  
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-UgZlma8NzkrDb/NWgmLIcTrH7i/CSnLLDRFqCSNF5NGPpjKmzyM25qcoXGOup8+cDakKyaiTDd7N4dyH4YT+IA==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/less.min.js"></script>
+  
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-lot9koe73sfXIrUvIPM/UEhuMciN56RPyBdOyZgfO53P2lkWyyXN7J+njcxIIBRV+nVDQeiWtiXg+bLAJZDTfg==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/nginx.min.js"></script>
+  
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-Zd3e7XxHP00TD0Imr0PIfeM0fl0v95kMWuhyAS3Wn1UTSXTkz0OhtRgBAr4JlmADRgiXr4x7lpeUdqaGN8xIog==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/puppet.min.js"></script>
+  
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-qtqDO052iXMSP+5d/aE/jMtL9vIIGvONgTJziC2K/ZIB1yEGa55WVxGE9/08rSQ62EoDifS9SWVGZ7ihSLhzMA==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/scss.min.js"></script>
+  
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-1NmkjnEDnwwwcu28KoQF8vs3oaPFokQHbmbtwGhFfeDsQZtVFI8zW2aE9O8yMYdpdyKV/5blE4pSWw4Z/Sv97w==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/stylus.min.js"></script>
+  
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-B2wSfruPjr8EJL6IIzQr1eAuDwrsfIfccNf/LCEdxELCgC/S/ZMt/Uvk80aD79m7IqOqW+Sw8nbkvha20yZpzg==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/swift.min.js"></script>
+  
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-28oDiQZGKUVN6wQ7PSLPNipOcmkCALXKwOi7bnkyFf8QiMZQxG9EQoy/iiNx6Zxj2cG2SbVa4dXKigQhu7GiFw==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/yaml.min.js"></script>
+  
+
+
+<script>
+$(document).ready(function() {
+  hljs.configure({ classPrefix: '', useBR: false });
+  $('pre.code-highlight > code, pre > code').each(function(i, block) {
+    if (!$(this).hasClass('codeblock')) {
+      $(this).addClass('codeblock');
+    }
+    hljs.highlightBlock(block);
+  });
+});
+</script>
+
+
+
+
+    
+  </body>
+</html>
+

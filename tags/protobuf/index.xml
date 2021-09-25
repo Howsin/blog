@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Howsin&#39;s Note</title>
-    <link>https://howsin.github.io/blog/</link>
-    <description>Recent content on Howsin&#39;s Note</description>
+    <title>protobuf on Howsin&#39;s Note</title>
+    <link>https://howsin.github.io/blog/tags/protobuf/</link>
+    <description>Recent content in protobuf on Howsin&#39;s Note</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 24 Sep 2021 12:30:17 +0800</lastBuildDate><atom:link href="https://howsin.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 24 Sep 2021 12:30:17 +0800</lastBuildDate><atom:link href="https://howsin.github.io/blog/tags/protobuf/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Grpc官方教學翻譯</title>
       <link>https://howsin.github.io/blog/post/grpc/</link>
@@ -28,15 +28,6 @@
 &lt;p&gt;使用 &lt;code&gt;Java gRPC API &lt;/code&gt;為你的服務建立一個簡單的伺服器端與用戶端&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;</description>
-    </item>
-    
-    <item>
-      <title>使用hugo於github上自架blog</title>
-      <link>https://howsin.github.io/blog/post/hello-hugo/</link>
-      <pubDate>Tue, 07 Sep 2021 16:37:47 +0800</pubDate>
-      
-      <guid>https://howsin.github.io/blog/post/hello-hugo/</guid>
-      <description>&lt;p&gt;隨著接觸到的技術越來越多，每次看過資料總是只有當下有記憶，只有那些常常用到的技術記憶相對深刻，其餘的就算解決過再遇到還是必須要再查一次，這時候就只能憑著印象去重頭摸索了，如果能有一個自己的技術blog，吸收了這些知識後寫下自己內化過的理解，一方面可以幫助遇到同樣問題的朋友，一方面也可以讓自己印象加深，看起來是個完美的解決方案。&lt;/p&gt;</description>
     </item>
     
   </channel>
