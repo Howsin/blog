@@ -6,7 +6,16 @@
     <description>Recent content in Categories on Howsin&#39;s Note</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 24 Sep 2021 12:30:17 +0800</lastBuildDate><atom:link href="https://howsin.github.io/blog/categories/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 01 Dec 2021 15:05:56 +0800</lastBuildDate><atom:link href="https://howsin.github.io/blog/categories/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Go</title>
+      <link>https://howsin.github.io/blog/categories/go/</link>
+      <pubDate>Wed, 01 Dec 2021 15:05:56 +0800</pubDate>
+      
+      <guid>https://howsin.github.io/blog/categories/go/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>gRPC</title>
       <link>https://howsin.github.io/blog/categories/grpc/</link>

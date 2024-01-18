@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    
+    <script type="application/ld+json">
+
+{  
+  "@context":"http://schema.org",
+  "@type":"Website",
+  "@id":"https:\/\/howsin.github.io\/blog\/",
+  "author": {
+    "@type": "Person",
+    "name": "Howsin",
+    
+    "image": "https://www.gravatar.com/avatar/4d97c06427794554df76b798877052a0"
+    
+  },
+  "name":"Howsin\u0027s Note",
+  "description":"[TOC]\n grpc 在java中的使用 步骤   定义proto文件\n  参见\n    根据proto文件生成java代码\n  通过protoc命令行生成\n  通过编辑器生成\n  新建maven项目\n  修改Pom文件\n\u0026lt;properties\u0026gt; \u0026lt;grpc.version\u0026gt;1.9.0\u0026lt;\/grpc.version\u0026gt; \u0026lt;protobuf.version\u0026gt;3.5.1\u0026lt;\/protobuf.version\u0026gt; \u0026lt;\/properties\u0026gt; \u0026lt;dependencies\u0026gt; \u0026lt;dependency\u0026gt; \u0026lt;groupId\u0026gt;io.grpc\u0026lt;\/groupId\u0026gt; \u0026lt;artifactId\u0026gt;grpc-netty\u0026lt;\/artifactId\u0026gt; \u0026lt;version\u0026gt;${grpc.version}\u0026lt;\/version\u0026gt; \u0026lt;\/dependency\u0026gt; \u0026lt;dependency\u0026gt; \u0026lt;groupId\u0026gt;io.grpc\u0026lt;\/groupId\u0026gt; \u0026lt;artifactId\u0026gt;grpc-protobuf\u0026lt;\/artifactId\u0026gt; \u0026lt;version\u0026gt;${grpc.version}\u0026lt;\/version\u0026gt; \u0026lt;\/dependency\u0026gt; \u0026lt;dependency\u0026gt; \u0026lt;groupId\u0026gt;io.grpc\u0026lt;\/groupId\u0026gt; \u0026lt;artifactId\u0026gt;grpc-stub\u0026lt;\/artifactId\u0026gt; \u0026lt;version\u0026gt;${grpc.version}\u0026lt;\/version\u0026gt; \u0026lt;\/dependency\u0026gt; \u0026lt;dependency\u0026gt; \u0026lt;groupId\u0026gt;com.google.protobuf\u0026lt;\/groupId\u0026gt; \u0026lt;artifactId\u0026gt;protobuf-java\u0026lt;\/artifactId\u0026gt; \u0026lt;version\u0026gt;${protobuf.version}\u0026lt;\/version\u0026gt; \u0026lt;\/dependency\u0026gt; \u0026lt;\/dependencies\u0026gt; \u0026lt;build\u0026gt; \u0026lt;extensions\u0026gt; \u0026lt;extension\u0026gt; \u0026lt;groupId\u0026gt;kr.motd.maven\u0026lt;\/groupId\u0026gt; \u0026lt;artifactId\u0026gt;os-maven-plugin\u0026lt;\/artifactId\u0026gt; \u0026lt;version\u0026gt;1.5.0.Final\u0026lt;\/version\u0026gt; \u0026lt;\/extension\u0026gt; \u0026lt;\/extensions\u0026gt; \u0026lt;plugins\u0026gt; \u0026lt;plugin\u0026gt; \u0026lt;groupId\u0026gt;org.xolstice.maven.plugins\u0026lt;\/groupId\u0026gt; \u0026lt;artifactId\u0026gt;protobuf-maven-plugin\u0026lt;\/artifactId\u0026gt; \u0026lt;version\u0026gt;0.5.0\u0026lt;\/version\u0026gt; \u0026lt;configuration\u0026gt; \u0026lt;protocArtifact\u0026gt;com.google.protobuf:protoc:3.5.1-1:exe:${os.detected.classifier}\u0026lt;\/protocArtifact\u0026gt; \u0026lt;pluginId\u0026gt;grpc-java\u0026lt;\/pluginId\u0026gt; \u0026lt;pluginArtifact\u0026gt;io.",
+  "url":"https:\/\/howsin.github.io\/blog\/post\/grpc-%E5%9C%A8java%E4%B8%AD%E7%9A%84%E4%BD%BF%E7%94%A8\/",
+  "keywords":"[]"
+}
+
+</script>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Hugo 0.89.0-DEV with theme Tranquilpeak 0.5.1-BETA">
+<meta name="author" content="Howsin">
+<meta name="keywords" content="">
+<meta name="description" content="[TOC]
+ grpc 在java中的使用 步骤   定义proto文件
+  参见
+    根据proto文件生成java代码
+  通过protoc命令行生成
+  通过编辑器生成
+  新建maven项目
+  修改Pom文件
+&lt;properties&gt; &lt;grpc.version&gt;1.9.0&lt;/grpc.version&gt; &lt;protobuf.version&gt;3.5.1&lt;/protobuf.version&gt; &lt;/properties&gt; &lt;dependencies&gt; &lt;dependency&gt; &lt;groupId&gt;io.grpc&lt;/groupId&gt; &lt;artifactId&gt;grpc-netty&lt;/artifactId&gt; &lt;version&gt;${grpc.version}&lt;/version&gt; &lt;/dependency&gt; &lt;dependency&gt; &lt;groupId&gt;io.grpc&lt;/groupId&gt; &lt;artifactId&gt;grpc-protobuf&lt;/artifactId&gt; &lt;version&gt;${grpc.version}&lt;/version&gt; &lt;/dependency&gt; &lt;dependency&gt; &lt;groupId&gt;io.grpc&lt;/groupId&gt; &lt;artifactId&gt;grpc-stub&lt;/artifactId&gt; &lt;version&gt;${grpc.version}&lt;/version&gt; &lt;/dependency&gt; &lt;dependency&gt; &lt;groupId&gt;com.google.protobuf&lt;/groupId&gt; &lt;artifactId&gt;protobuf-java&lt;/artifactId&gt; &lt;version&gt;${protobuf.version}&lt;/version&gt; &lt;/dependency&gt; &lt;/dependencies&gt; &lt;build&gt; &lt;extensions&gt; &lt;extension&gt; &lt;groupId&gt;kr.motd.maven&lt;/groupId&gt; &lt;artifactId&gt;os-maven-plugin&lt;/artifactId&gt; &lt;version&gt;1.5.0.Final&lt;/version&gt; &lt;/extension&gt; &lt;/extensions&gt; &lt;plugins&gt; &lt;plugin&gt; &lt;groupId&gt;org.xolstice.maven.plugins&lt;/groupId&gt; &lt;artifactId&gt;protobuf-maven-plugin&lt;/artifactId&gt; &lt;version&gt;0.5.0&lt;/version&gt; &lt;configuration&gt; &lt;protocArtifact&gt;com.google.protobuf:protoc:3.5.1-1:exe:${os.detected.classifier}&lt;/protocArtifact&gt; &lt;pluginId&gt;grpc-java&lt;/pluginId&gt; &lt;pluginArtifact&gt;io.">
+
+
+<meta property="og:description" content="[TOC]
+ grpc 在java中的使用 步骤   定义proto文件
+  参见
+    根据proto文件生成java代码
+  通过protoc命令行生成
+  通过编辑器生成
+  新建maven项目
+  修改Pom文件
+&lt;properties&gt; &lt;grpc.version&gt;1.9.0&lt;/grpc.version&gt; &lt;protobuf.version&gt;3.5.1&lt;/protobuf.version&gt; &lt;/properties&gt; &lt;dependencies&gt; &lt;dependency&gt; &lt;groupId&gt;io.grpc&lt;/groupId&gt; &lt;artifactId&gt;grpc-netty&lt;/artifactId&gt; &lt;version&gt;${grpc.version}&lt;/version&gt; &lt;/dependency&gt; &lt;dependency&gt; &lt;groupId&gt;io.grpc&lt;/groupId&gt; &lt;artifactId&gt;grpc-protobuf&lt;/artifactId&gt; &lt;version&gt;${grpc.version}&lt;/version&gt; &lt;/dependency&gt; &lt;dependency&gt; &lt;groupId&gt;io.grpc&lt;/groupId&gt; &lt;artifactId&gt;grpc-stub&lt;/artifactId&gt; &lt;version&gt;${grpc.version}&lt;/version&gt; &lt;/dependency&gt; &lt;dependency&gt; &lt;groupId&gt;com.google.protobuf&lt;/groupId&gt; &lt;artifactId&gt;protobuf-java&lt;/artifactId&gt; &lt;version&gt;${protobuf.version}&lt;/version&gt; &lt;/dependency&gt; &lt;/dependencies&gt; &lt;build&gt; &lt;extensions&gt; &lt;extension&gt; &lt;groupId&gt;kr.motd.maven&lt;/groupId&gt; &lt;artifactId&gt;os-maven-plugin&lt;/artifactId&gt; &lt;version&gt;1.5.0.Final&lt;/version&gt; &lt;/extension&gt; &lt;/extensions&gt; &lt;plugins&gt; &lt;plugin&gt; &lt;groupId&gt;org.xolstice.maven.plugins&lt;/groupId&gt; &lt;artifactId&gt;protobuf-maven-plugin&lt;/artifactId&gt; &lt;version&gt;0.5.0&lt;/version&gt; &lt;configuration&gt; &lt;protocArtifact&gt;com.google.protobuf:protoc:3.5.1-1:exe:${os.detected.classifier}&lt;/protocArtifact&gt; &lt;pluginId&gt;grpc-java&lt;/pluginId&gt; &lt;pluginArtifact&gt;io.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Howsin&#39;s Note">
+<meta name="twitter:title" content="Howsin&#39;s Note">
+<meta property="og:url" content="https://howsin.github.io/blog/post/grpc-%E5%9C%A8java%E4%B8%AD%E7%9A%84%E4%BD%BF%E7%94%A8/">
+<meta property="twitter:url" content="https://howsin.github.io/blog/post/grpc-%E5%9C%A8java%E4%B8%AD%E7%9A%84%E4%BD%BF%E7%94%A8/">
+<meta property="og:site_name" content="Howsin&#39;s Note">
+<meta property="og:description" content="[TOC]
+ grpc 在java中的使用 步骤   定义proto文件
+  参见
+    根据proto文件生成java代码
+  通过protoc命令行生成
+  通过编辑器生成
+  新建maven项目
+  修改Pom文件
+&lt;properties&gt; &lt;grpc.version&gt;1.9.0&lt;/grpc.version&gt; &lt;protobuf.version&gt;3.5.1&lt;/protobuf.version&gt; &lt;/properties&gt; &lt;dependencies&gt; &lt;dependency&gt; &lt;groupId&gt;io.grpc&lt;/groupId&gt; &lt;artifactId&gt;grpc-netty&lt;/artifactId&gt; &lt;version&gt;${grpc.version}&lt;/version&gt; &lt;/dependency&gt; &lt;dependency&gt; &lt;groupId&gt;io.grpc&lt;/groupId&gt; &lt;artifactId&gt;grpc-protobuf&lt;/artifactId&gt; &lt;version&gt;${grpc.version}&lt;/version&gt; &lt;/dependency&gt; &lt;dependency&gt; &lt;groupId&gt;io.grpc&lt;/groupId&gt; &lt;artifactId&gt;grpc-stub&lt;/artifactId&gt; &lt;version&gt;${grpc.version}&lt;/version&gt; &lt;/dependency&gt; &lt;dependency&gt; &lt;groupId&gt;com.google.protobuf&lt;/groupId&gt; &lt;artifactId&gt;protobuf-java&lt;/artifactId&gt; &lt;version&gt;${protobuf.version}&lt;/version&gt; &lt;/dependency&gt; &lt;/dependencies&gt; &lt;build&gt; &lt;extensions&gt; &lt;extension&gt; &lt;groupId&gt;kr.motd.maven&lt;/groupId&gt; &lt;artifactId&gt;os-maven-plugin&lt;/artifactId&gt; &lt;version&gt;1.5.0.Final&lt;/version&gt; &lt;/extension&gt; &lt;/extensions&gt; &lt;plugins&gt; &lt;plugin&gt; &lt;groupId&gt;org.xolstice.maven.plugins&lt;/groupId&gt; &lt;artifactId&gt;protobuf-maven-plugin&lt;/artifactId&gt; &lt;version&gt;0.5.0&lt;/version&gt; &lt;configuration&gt; &lt;protocArtifact&gt;com.google.protobuf:protoc:3.5.1-1:exe:${os.detected.classifier}&lt;/protocArtifact&gt; &lt;pluginId&gt;grpc-java&lt;/pluginId&gt; &lt;pluginArtifact&gt;io.">
+<meta name="twitter:description" content="[TOC]
+ grpc 在java中的使用 步骤   定义proto文件
+  参见
+    根据proto文件生成java代码
+  通过protoc命令行生成
+  通过编辑器生成
+  新建maven项目
+  修改Pom文件
+&lt;properties&gt; &lt;grpc.version&gt;1.9.0&lt;/grpc.version&gt; &lt;protobuf.version&gt;3.5.1&lt;/protobuf.version&gt; &lt;/properties&gt; &lt;dependencies&gt; &lt;dependency&gt; &lt;groupId&gt;io.grpc&lt;/groupId&gt; &lt;artifactId&gt;grpc-netty&lt;/artifactId&gt; &lt;version&gt;${grpc.version}&lt;/version&gt; &lt;/dependency&gt; &lt;dependency&gt; &lt;groupId&gt;io.grpc&lt;/groupId&gt; &lt;artifactId&gt;grpc-protobuf&lt;/artifactId&gt; &lt;version&gt;${grpc.version}&lt;/version&gt; &lt;/dependency&gt; &lt;dependency&gt; &lt;groupId&gt;io.grpc&lt;/groupId&gt; &lt;artifactId&gt;grpc-stub&lt;/artifactId&gt; &lt;version&gt;${grpc.version}&lt;/version&gt; &lt;/dependency&gt; &lt;dependency&gt; &lt;groupId&gt;com.google.protobuf&lt;/groupId&gt; &lt;artifactId&gt;protobuf-java&lt;/artifactId&gt; &lt;version&gt;${protobuf.version}&lt;/version&gt; &lt;/dependency&gt; &lt;/dependencies&gt; &lt;build&gt; &lt;extensions&gt; &lt;extension&gt; &lt;groupId&gt;kr.motd.maven&lt;/groupId&gt; &lt;artifactId&gt;os-maven-plugin&lt;/artifactId&gt; &lt;version&gt;1.5.0.Final&lt;/version&gt; &lt;/extension&gt; &lt;/extensions&gt; &lt;plugins&gt; &lt;plugin&gt; &lt;groupId&gt;org.xolstice.maven.plugins&lt;/groupId&gt; &lt;artifactId&gt;protobuf-maven-plugin&lt;/artifactId&gt; &lt;version&gt;0.5.0&lt;/version&gt; &lt;configuration&gt; &lt;protocArtifact&gt;com.google.protobuf:protoc:3.5.1-1:exe:${os.detected.classifier}&lt;/protocArtifact&gt; &lt;pluginId&gt;grpc-java&lt;/pluginId&gt; &lt;pluginArtifact&gt;io.">
+<meta property="og:locale" content="en-us">
+
+  
+  
+  
+  
+  
+
+
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+
+
+  <meta property="og:image" content="https://www.gravatar.com/avatar/4d97c06427794554df76b798877052a0?s=640">
+  <meta property="twitter:image" content="https://www.gravatar.com/avatar/4d97c06427794554df76b798877052a0?s=640">
+
+
+
+
+
+
+    <title>Howsin&#39;s Note</title>
+
+    <link rel="icon" href="https://howsin.github.io/blog/favicon.png">
+    
+
+    
+
+    <link rel="canonical" href="https://howsin.github.io/blog/post/grpc-%E5%9C%A8java%E4%B8%AD%E7%9A%84%E4%BD%BF%E7%94%A8/">
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha512-H9jrZiiopUdsLpg94A333EfumgUBpO9MdbxStdeITo+KEIMaNfHNvwyjjDJb+ERPaRS6DpyRlKbvPUasNItRyw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    
+    
+    <link rel="stylesheet" href="https://howsin.github.io/blog/css/style-2w2urpokyukbsouppglitcyxngrsa0pcm58rrm5mqo3ieqo6bkvr3cz9nvf.min.css" />
+    
+    
+
+    
+      
+    
+    
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="5">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://howsin.github.io/blog/" aria-label="Go to homepage">Howsin&#39;s Note</a>
+  </div>
+  
+    
+      <a class="header-right-picture "
+         href="https://howsin.github.io/blog/#about" aria-label="Open the link: /#about">
+    
+    
+    
+      
+        <img class="header-picture" src="https://www.gravatar.com/avatar/4d97c06427794554df76b798877052a0?s=90" alt="Author&#39;s picture" />
+      
+    
+    </a>
+  
+</header>
+
+      <nav id="sidebar" data-behavior="5">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://howsin.github.io/blog/#about" aria-label="Read more about the author">
+          <img class="sidebar-profile-picture" src="https://www.gravatar.com/avatar/4d97c06427794554df76b798877052a0?s=110" alt="Author&#39;s picture" />
+        </a>
+        <h4 class="sidebar-profile-name">Howsin</h4>
+        
+          <h5 class="sidebar-profile-bio">Software Engineer. Web Developer</h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://howsin.github.io/blog/" title="Home">
+    
+      <i class="sidebar-button-icon fas fa-lg fa-home" aria-hidden="true"></i>
+      
+      <span class="sidebar-button-desc">Home</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://howsin.github.io/blog/categories" title="Categories">
+    
+      <i class="sidebar-button-icon fas fa-lg fa-bookmark" aria-hidden="true"></i>
+      
+      <span class="sidebar-button-desc">Categories</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://howsin.github.io/blog/tags" title="Tags">
+    
+      <i class="sidebar-button-icon fas fa-lg fa-tags" aria-hidden="true"></i>
+      
+      <span class="sidebar-button-desc">Tags</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://howsin.github.io/blog/archives" title="Archives">
+    
+      <i class="sidebar-button-icon fas fa-lg fa-archive" aria-hidden="true"></i>
+      
+      <span class="sidebar-button-desc">Archives</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/howsin" target="_blank" rel="noopener" title="GitHub">
+    
+      <i class="sidebar-button-icon fab fa-lg fa-github" aria-hidden="true"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://howsin.github.io/blog/#about" title="About">
+    
+      <i class="sidebar-button-icon fas fa-lg fa-question" aria-hidden="true"></i>
+      
+      <span class="sidebar-button-desc">About</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+
+    </ul>
+  </div>
+</nav>
+
+      
+
+      <div id="main" data-behavior="5"
+        class="
+               hasCoverMetaIn
+               ">
+        <article class="post">
+          
+          
+            <div class="post-header main-content-wrap text-left">
+  
+    <h1 class="post-title">
+      
+    </h1>
+  
+  
+  <div class="postShorten-meta post-meta">
+    
+      <time datetime="0001-01-01T00:00:00Z">
+        
+  January 1, 1
+
+      </time>
+    
+    
+  </div>
+
+</div>
+          
+          <div class="post-content markdown">
+            <div class="main-content-wrap">
+              <p>[TOC]</p>
+<hr>
+<h1 id="grpc-在java中的使用">grpc 在java中的使用</h1>
+<h2 id="步骤">步骤</h2>
+<ol>
+<li>
+<p>定义proto文件</p>
+<ul>
+<li>
+<p>参见</p>
+</li>
+</ul>
+</li>
+<li>
+<p>根据proto文件生成java代码</p>
+<ul>
+<li>
+<p>通过protoc命令行生成</p>
+</li>
+<li>
+<p>通过编辑器生成</p>
+<ul>
+<li>
+<p>新建maven项目</p>
+</li>
+<li>
+<p>修改Pom文件</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml">    <span style="color:#f92672">&lt;properties&gt;</span>
+        <span style="color:#f92672">&lt;grpc.version&gt;</span>1.9.0<span style="color:#f92672">&lt;/grpc.version&gt;</span>
+        <span style="color:#f92672">&lt;protobuf.version&gt;</span>3.5.1<span style="color:#f92672">&lt;/protobuf.version&gt;</span>
+    <span style="color:#f92672">&lt;/properties&gt;</span>
+
+    <span style="color:#f92672">&lt;dependencies&gt;</span>
+        <span style="color:#f92672">&lt;dependency&gt;</span>
+            <span style="color:#f92672">&lt;groupId&gt;</span>io.grpc<span style="color:#f92672">&lt;/groupId&gt;</span>
+            <span style="color:#f92672">&lt;artifactId&gt;</span>grpc-netty<span style="color:#f92672">&lt;/artifactId&gt;</span>
+            <span style="color:#f92672">&lt;version&gt;</span>${grpc.version}<span style="color:#f92672">&lt;/version&gt;</span>
+        <span style="color:#f92672">&lt;/dependency&gt;</span>
+        <span style="color:#f92672">&lt;dependency&gt;</span>
+            <span style="color:#f92672">&lt;groupId&gt;</span>io.grpc<span style="color:#f92672">&lt;/groupId&gt;</span>
+            <span style="color:#f92672">&lt;artifactId&gt;</span>grpc-protobuf<span style="color:#f92672">&lt;/artifactId&gt;</span>
+            <span style="color:#f92672">&lt;version&gt;</span>${grpc.version}<span style="color:#f92672">&lt;/version&gt;</span>
+        <span style="color:#f92672">&lt;/dependency&gt;</span>
+        <span style="color:#f92672">&lt;dependency&gt;</span>
+            <span style="color:#f92672">&lt;groupId&gt;</span>io.grpc<span style="color:#f92672">&lt;/groupId&gt;</span>
+            <span style="color:#f92672">&lt;artifactId&gt;</span>grpc-stub<span style="color:#f92672">&lt;/artifactId&gt;</span>
+            <span style="color:#f92672">&lt;version&gt;</span>${grpc.version}<span style="color:#f92672">&lt;/version&gt;</span>
+        <span style="color:#f92672">&lt;/dependency&gt;</span>
+        <span style="color:#f92672">&lt;dependency&gt;</span>
+            <span style="color:#f92672">&lt;groupId&gt;</span>com.google.protobuf<span style="color:#f92672">&lt;/groupId&gt;</span>
+            <span style="color:#f92672">&lt;artifactId&gt;</span>protobuf-java<span style="color:#f92672">&lt;/artifactId&gt;</span>
+            <span style="color:#f92672">&lt;version&gt;</span>${protobuf.version}<span style="color:#f92672">&lt;/version&gt;</span>
+        <span style="color:#f92672">&lt;/dependency&gt;</span>
+    <span style="color:#f92672">&lt;/dependencies&gt;</span>
+    <span style="color:#f92672">&lt;build&gt;</span>
+        <span style="color:#f92672">&lt;extensions&gt;</span>
+            <span style="color:#f92672">&lt;extension&gt;</span>
+                <span style="color:#f92672">&lt;groupId&gt;</span>kr.motd.maven<span style="color:#f92672">&lt;/groupId&gt;</span>
+                <span style="color:#f92672">&lt;artifactId&gt;</span>os-maven-plugin<span style="color:#f92672">&lt;/artifactId&gt;</span>
+                <span style="color:#f92672">&lt;version&gt;</span>1.5.0.Final<span style="color:#f92672">&lt;/version&gt;</span>
+            <span style="color:#f92672">&lt;/extension&gt;</span>
+        <span style="color:#f92672">&lt;/extensions&gt;</span>
+        <span style="color:#f92672">&lt;plugins&gt;</span>
+            <span style="color:#f92672">&lt;plugin&gt;</span>
+                <span style="color:#f92672">&lt;groupId&gt;</span>org.xolstice.maven.plugins<span style="color:#f92672">&lt;/groupId&gt;</span>
+                <span style="color:#f92672">&lt;artifactId&gt;</span>protobuf-maven-plugin<span style="color:#f92672">&lt;/artifactId&gt;</span>
+                <span style="color:#f92672">&lt;version&gt;</span>0.5.0<span style="color:#f92672">&lt;/version&gt;</span>
+                <span style="color:#f92672">&lt;configuration&gt;</span>
+                    <span style="color:#f92672">&lt;protocArtifact&gt;</span>com.google.protobuf:protoc:3.5.1-1:exe:${os.detected.classifier}<span style="color:#f92672">&lt;/protocArtifact&gt;</span>
+                    <span style="color:#f92672">&lt;pluginId&gt;</span>grpc-java<span style="color:#f92672">&lt;/pluginId&gt;</span>
+                    <span style="color:#f92672">&lt;pluginArtifact&gt;</span>io.grpc:protoc-gen-grpc-java:1.9.0:exe:${os.detected.classifier}<span style="color:#f92672">&lt;/pluginArtifact&gt;</span>
+                <span style="color:#f92672">&lt;/configuration&gt;</span>
+                <span style="color:#f92672">&lt;executions&gt;</span>
+                    <span style="color:#f92672">&lt;execution&gt;</span>
+                        <span style="color:#f92672">&lt;goals&gt;</span>
+                            <span style="color:#f92672">&lt;goal&gt;</span>compile<span style="color:#f92672">&lt;/goal&gt;</span>
+                            <span style="color:#f92672">&lt;goal&gt;</span>compile-custom<span style="color:#f92672">&lt;/goal&gt;</span>
+                        <span style="color:#f92672">&lt;/goals&gt;</span>
+                    <span style="color:#f92672">&lt;/execution&gt;</span>
+                <span style="color:#f92672">&lt;/executions&gt;</span>
+            <span style="color:#f92672">&lt;/plugin&gt;</span>
+            <span style="color:#f92672">&lt;plugin&gt;</span>
+                <span style="color:#f92672">&lt;groupId&gt;</span>org.apache.maven.plugins<span style="color:#f92672">&lt;/groupId&gt;</span>
+                <span style="color:#f92672">&lt;artifactId&gt;</span>maven-compiler-plugin<span style="color:#f92672">&lt;/artifactId&gt;</span>
+                <span style="color:#f92672">&lt;configuration&gt;</span>
+                    <span style="color:#f92672">&lt;source&gt;</span>1.6<span style="color:#f92672">&lt;/source&gt;</span>
+                    <span style="color:#f92672">&lt;target&gt;</span>1.6<span style="color:#f92672">&lt;/target&gt;</span>
+                <span style="color:#f92672">&lt;/configuration&gt;</span>
+            <span style="color:#f92672">&lt;/plugin&gt;</span>
+        <span style="color:#f92672">&lt;/plugins&gt;</span>
+    <span style="color:#f92672">&lt;/build&gt;</span>
+</code></pre></div></li>
+<li>
+<p>将proto文件拷贝到src/main/proto或src/test/proto，执行mvn compile自动生成</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h2 id="service分类">Service分类</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>同步/异步</th>
+<th>公式</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Simple RPC</td>
+<td>同步</td>
+<td>rpc method_name(message) returns (message) {}</td>
+<td>直接调用</td>
+</tr>
+<tr>
+<td>Server-side Stream RPC</td>
+<td>同步</td>
+<td>rpc method_name(message) returns (stream message) {}</td>
+<td>服务器通过管道的方式返回</td>
+</tr>
+<tr>
+<td>Client-side Stream RPC</td>
+<td>异步</td>
+<td>rpc method_name(stream message) returns (message) {}</td>
+<td>客户端通过管道的方式发送</td>
+</tr>
+<tr>
+<td>Bidirectional Stream RPC</td>
+<td>异步</td>
+<td>rpc method_name(stream message) returns (stream message) {}</td>
+<td>客户端和服务器都通过管道的方式发送和返回</td>
+</tr>
+</tbody>
+</table>
+<h2 id="调用">调用</h2>
+<p>根据Service分类的方式不同，服务器端的代码和客户端代码会有所不同，具体如下</p>
+<h3 id="simple-rpc">Simple RPC</h3>
+<h4 id="服务器端">服务器端</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">    <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SimpleRpcServiceImpl</span> <span style="color:#66d9ef">extends</span> SimpleRpcServiceGrpc<span style="color:#f92672">.</span><span style="color:#a6e22e">SimpleRpcServiceImplBase</span> <span style="color:#f92672">{</span>
+        <span style="color:#a6e22e">@Override</span>
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">service</span><span style="color:#f92672">(</span>SimpleRpcIn request<span style="color:#f92672">,</span>StreamObserver<span style="color:#f92672">&lt;</span>SimpleRpcOut<span style="color:#f92672">&gt;</span> responseObserver<span style="color:#f92672">){</span>
+            logger<span style="color:#f92672">.</span><span style="color:#a6e22e">info</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;request:&#34;</span> <span style="color:#f92672">+</span> request<span style="color:#f92672">.</span><span style="color:#a6e22e">getInmessage</span><span style="color:#f92672">());</span>
+            SimpleRpcOut simpleRpcOut <span style="color:#f92672">=</span> SimpleRpcOut<span style="color:#f92672">.</span><span style="color:#a6e22e">newBuilder</span><span style="color:#f92672">().</span><span style="color:#a6e22e">setOutmessage</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;simple rpc out...&#34;</span><span style="color:#f92672">).</span><span style="color:#a6e22e">build</span><span style="color:#f92672">();</span>
+            responseObserver<span style="color:#f92672">.</span><span style="color:#a6e22e">onNext</span><span style="color:#f92672">(</span>simpleRpcOut<span style="color:#f92672">);</span>
+            responseObserver<span style="color:#f92672">.</span><span style="color:#a6e22e">onCompleted</span><span style="color:#f92672">();</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+</code></pre></div><ol>
+<li>继承自XXXGrpc.XXXImplBase</li>
+<li>实现对应的方法</li>
+<li>调用StreamObserver的onNext方法返回对应对象，对象通过message.newBuilder()&hellip;.build()获取</li>
+<li>调用StreamObserver的onCompleted方法完成服务器端调用</li>
+</ol>
+<h4 id="客户端">客户端</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">        <span style="color:#66d9ef">this</span><span style="color:#f92672">(</span>ManagedChannelBuilder<span style="color:#f92672">.</span><span style="color:#a6e22e">forAddress</span><span style="color:#f92672">(</span>host<span style="color:#f92672">,</span>port<span style="color:#f92672">)</span>
+                <span style="color:#f92672">.</span><span style="color:#a6e22e">usePlaintext</span><span style="color:#f92672">(</span><span style="color:#66d9ef">true</span><span style="color:#f92672">)</span>
+                <span style="color:#f92672">.</span><span style="color:#a6e22e">build</span><span style="color:#f92672">());</span>
+
+<span style="color:#f92672">...</span>
+    
+        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">managedChannel</span> <span style="color:#f92672">=</span> channel<span style="color:#f92672">;</span>
+        blockingStub <span style="color:#f92672">=</span> SimpleRpcServiceGrpc<span style="color:#f92672">.</span><span style="color:#a6e22e">newBlockingStub</span><span style="color:#f92672">(</span>managedChannel<span style="color:#f92672">);</span>
+
+<span style="color:#f92672">...</span>
+    
+            SimpleRpcIn request <span style="color:#f92672">=</span> SimpleRpcIn<span style="color:#f92672">.</span><span style="color:#a6e22e">newBuilder</span><span style="color:#f92672">().</span><span style="color:#a6e22e">setInmessage</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Simple Rpc In.....&#34;</span><span style="color:#f92672">).</span><span style="color:#a6e22e">build</span><span style="color:#f92672">();</span>
+        SimpleRpcOut response<span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+            logger<span style="color:#f92672">.</span><span style="color:#a6e22e">info</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;start call server....&#34;</span><span style="color:#f92672">);</span>
+            response <span style="color:#f92672">=</span> blockingStub<span style="color:#f92672">.</span><span style="color:#a6e22e">service</span><span style="color:#f92672">(</span>request<span style="color:#f92672">);</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>StatusRuntimeException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            logger<span style="color:#f92672">.</span><span style="color:#a6e22e">log</span><span style="color:#f92672">(</span>Level<span style="color:#f92672">.</span><span style="color:#a6e22e">WARNING</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;RPC failed: {0}&#34;</span><span style="color:#f92672">,</span> e<span style="color:#f92672">.</span><span style="color:#a6e22e">getStatus</span><span style="color:#f92672">());</span>
+            <span style="color:#66d9ef">return</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+</code></pre></div><ol>
+<li>通过ManagedChannelBuilder构建managedChannel</li>
+<li>通过ManagedChannel构建BlockingStub（同步调用所以使用BlockingStub）</li>
+<li>构建调用参数，通过BlockingStub调用，并处理返回结果</li>
+</ol>
+<p>###Server-side Stream RPC</p>
+<h4 id="服务器端-1">服务器端</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">    <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ServerSideStreamServiceImpl</span> <span style="color:#66d9ef">extends</span> ServerSideStreamServiceGrpc<span style="color:#f92672">.</span><span style="color:#a6e22e">ServerSideStreamServiceImplBase</span> <span style="color:#f92672">{</span>
+        <span style="color:#a6e22e">@Override</span>
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">service</span><span style="color:#f92672">(</span>ServerSideStreamIn request<span style="color:#f92672">,</span> StreamObserver<span style="color:#f92672">&lt;</span>ServerSideStreamOut<span style="color:#f92672">&gt;</span> responseObserver<span style="color:#f92672">){</span>
+            logger<span style="color:#f92672">.</span><span style="color:#a6e22e">info</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;request:&#34;</span> <span style="color:#f92672">+</span> request<span style="color:#f92672">.</span><span style="color:#a6e22e">getInmessage</span><span style="color:#f92672">());</span>
+            List<span style="color:#f92672">&lt;</span>ServerSideStreamOut<span style="color:#f92672">&gt;</span> serverSideStreamOutList <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ArrayList<span style="color:#f92672">&lt;</span>ServerSideStreamOut<span style="color:#f92672">&gt;();</span>
+            <span style="color:#66d9ef">for</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> 0 <span style="color:#f92672">;</span> i <span style="color:#f92672">&lt;</span> 10 <span style="color:#f92672">;</span> i<span style="color:#f92672">++){</span>
+                serverSideStreamOutList<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>ServerSideStreamOut<span style="color:#f92672">.</span><span style="color:#a6e22e">newBuilder</span><span style="color:#f92672">().</span><span style="color:#a6e22e">setOutmessage</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;simple rpc out...&#34;</span> <span style="color:#f92672">+</span> i<span style="color:#f92672">).</span><span style="color:#a6e22e">build</span><span style="color:#f92672">());</span>
+            <span style="color:#f92672">}</span>
+
+            <span style="color:#66d9ef">for</span><span style="color:#f92672">(</span>ServerSideStreamOut serverSideStreamOut<span style="color:#f92672">:</span> serverSideStreamOutList<span style="color:#f92672">){</span>
+                responseObserver<span style="color:#f92672">.</span><span style="color:#a6e22e">onNext</span><span style="color:#f92672">(</span>serverSideStreamOut<span style="color:#f92672">);</span>
+            <span style="color:#f92672">}</span>
+            responseObserver<span style="color:#f92672">.</span><span style="color:#a6e22e">onCompleted</span><span style="color:#f92672">();</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+</code></pre></div><ol>
+<li>继承自XXXGrpc.XXXImplBase</li>
+<li>实现对应的方法</li>
+<li>调用StreamObserver的onNext方法返回对应对象，因为是管道对象所以可能会调用多次onNext，对象通过message.newBuilder()&hellip;.build()获取</li>
+<li>调用StreamObserver的onCompleted方法完成服务器端调用</li>
+</ol>
+<h4 id="客户端-1">客户端</h4>
+<ul>
+<li>Server-side Stream RPC的客户端调用方式和Simple RPC调用方式相同，也是同步调用</li>
+</ul>
+<h3 id="client-side-stream-rpc">Client-side Stream RPC</h3>
+<h4 id="服务器端-2">服务器端</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">	    <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ClientSideStreamServiceImpl</span> <span style="color:#66d9ef">extends</span> ClientSideStreamServiceGrpc<span style="color:#f92672">.</span><span style="color:#a6e22e">ClientSideStreamServiceImplBase</span> <span style="color:#f92672">{</span>
+        <span style="color:#a6e22e">@Override</span>
+        <span style="color:#66d9ef">public</span> StreamObserver<span style="color:#f92672">&lt;</span>ClientSideStreamIn<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">service</span><span style="color:#f92672">(</span>
+                <span style="color:#66d9ef">final</span> StreamObserver<span style="color:#f92672">&lt;</span>ClientSideStreamOut<span style="color:#f92672">&gt;</span> responseObserver<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> StreamObserver<span style="color:#f92672">&lt;</span>ClientSideStreamIn<span style="color:#f92672">&gt;()</span> <span style="color:#f92672">{</span>
+                <span style="color:#66d9ef">int</span> inCount <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
+                StringBuilder totalOutSb <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> StringBuilder<span style="color:#f92672">();</span>
+
+
+                <span style="color:#a6e22e">@Override</span>
+                <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onNext</span><span style="color:#f92672">(</span>ClientSideStreamIn clientSideStreamIn<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                    inCount<span style="color:#f92672">++;</span>
+                    logger<span style="color:#f92672">.</span><span style="color:#a6e22e">info</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;current:&#34;</span> <span style="color:#f92672">+</span> inCount <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;:&#34;</span> <span style="color:#f92672">+</span> clientSideStreamIn<span style="color:#f92672">.</span><span style="color:#a6e22e">getInmessage</span><span style="color:#f92672">());</span>
+                    totalOutSb<span style="color:#f92672">.</span><span style="color:#a6e22e">append</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Client Side Stream Out &#34;</span> <span style="color:#f92672">+</span> inCount <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;\r\n&#34;</span><span style="color:#f92672">);</span>
+                <span style="color:#f92672">}</span>
+
+                <span style="color:#a6e22e">@Override</span>
+                <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onError</span><span style="color:#f92672">(</span>Throwable throwable<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                    logger<span style="color:#f92672">.</span><span style="color:#a6e22e">log</span><span style="color:#f92672">(</span>Level<span style="color:#f92672">.</span><span style="color:#a6e22e">WARNING</span><span style="color:#f92672">,</span><span style="color:#e6db74">&#34;Encountered error in Client Side Stream error:&#34;</span> <span style="color:#f92672">+</span> throwable<span style="color:#f92672">.</span><span style="color:#a6e22e">getMessage</span><span style="color:#f92672">());</span>
+                <span style="color:#f92672">}</span>
+
+                <span style="color:#a6e22e">@Override</span>
+                <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onCompleted</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+                    responseObserver<span style="color:#f92672">.</span><span style="color:#a6e22e">onNext</span><span style="color:#f92672">(</span>ClientSideStreamOut<span style="color:#f92672">.</span><span style="color:#a6e22e">newBuilder</span><span style="color:#f92672">().</span><span style="color:#a6e22e">setOutmessage</span><span style="color:#f92672">(</span>totalOutSb<span style="color:#f92672">.</span><span style="color:#a6e22e">toString</span><span style="color:#f92672">()).</span><span style="color:#a6e22e">build</span><span style="color:#f92672">());</span>
+                    responseObserver<span style="color:#f92672">.</span><span style="color:#a6e22e">onCompleted</span><span style="color:#f92672">();</span>
+                <span style="color:#f92672">}</span>
+            <span style="color:#f92672">};</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+</code></pre></div><ol>
+<li>继承自XXXGrpc.XXXImplBase</li>
+<li>实现对应的方法</li>
+<li>因为客户端是管道的形式，所以需要实现客户端的StreamObserver的onNext, onError, onCompleted方法</li>
+</ol>
+<h4 id="客户端-2">客户端</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">        <span style="color:#66d9ef">this</span><span style="color:#f92672">(</span>ManagedChannelBuilder<span style="color:#f92672">.</span><span style="color:#a6e22e">forAddress</span><span style="color:#f92672">(</span>host<span style="color:#f92672">,</span>port<span style="color:#f92672">)</span>
+                <span style="color:#f92672">.</span><span style="color:#a6e22e">usePlaintext</span><span style="color:#f92672">(</span><span style="color:#66d9ef">true</span><span style="color:#f92672">)</span>
+                <span style="color:#f92672">.</span><span style="color:#a6e22e">build</span><span style="color:#f92672">());</span>
+
+<span style="color:#f92672">...</span>
+    
+        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">managedChannel</span> <span style="color:#f92672">=</span> channel<span style="color:#f92672">;</span>
+        asyncStub <span style="color:#f92672">=</span> ClientSideStreamServiceGrpc<span style="color:#f92672">.</span><span style="color:#a6e22e">newStub</span><span style="color:#f92672">(</span>managedChannel<span style="color:#f92672">);</span>
+
+<span style="color:#f92672">...</span>
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">serviceClient</span><span style="color:#f92672">()</span> <span style="color:#66d9ef">throws</span> InterruptedException <span style="color:#f92672">{</span>
+        logger<span style="color:#f92672">.</span><span style="color:#a6e22e">info</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Will try to ClientSideStream  ...&#34;</span><span style="color:#f92672">);</span>
+        <span style="color:#66d9ef">final</span> CountDownLatch finishLatch <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> CountDownLatch<span style="color:#f92672">(</span>1<span style="color:#f92672">);</span>
+        StreamObserver<span style="color:#f92672">&lt;</span>ClientSideStreamOut<span style="color:#f92672">&gt;</span> responseObserver <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> StreamObserver<span style="color:#f92672">&lt;</span>ClientSideStreamOut<span style="color:#f92672">&gt;(){</span>
+
+            <span style="color:#a6e22e">@Override</span>
+            <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onNext</span><span style="color:#f92672">(</span>ClientSideStreamOut clientSideStreamOut<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                logger<span style="color:#f92672">.</span><span style="color:#a6e22e">info</span><span style="color:#f92672">(</span>clientSideStreamOut<span style="color:#f92672">.</span><span style="color:#a6e22e">getOutmessage</span><span style="color:#f92672">());</span>
+            <span style="color:#f92672">}</span>
+
+            <span style="color:#a6e22e">@Override</span>
+            <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onError</span><span style="color:#f92672">(</span>Throwable throwable<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                Status status <span style="color:#f92672">=</span> Status<span style="color:#f92672">.</span><span style="color:#a6e22e">fromThrowable</span><span style="color:#f92672">(</span>throwable<span style="color:#f92672">);</span>
+                logger<span style="color:#f92672">.</span><span style="color:#a6e22e">log</span><span style="color:#f92672">(</span>Level<span style="color:#f92672">.</span><span style="color:#a6e22e">WARNING</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;RecordRoute Failed: {0}&#34;</span><span style="color:#f92672">,</span> status<span style="color:#f92672">);</span>
+                finishLatch<span style="color:#f92672">.</span><span style="color:#a6e22e">countDown</span><span style="color:#f92672">();</span>
+            <span style="color:#f92672">}</span>
+
+            <span style="color:#a6e22e">@Override</span>
+            <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onCompleted</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+                logger<span style="color:#f92672">.</span><span style="color:#a6e22e">info</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Finished RecordRoute&#34;</span><span style="color:#f92672">);</span>
+                finishLatch<span style="color:#f92672">.</span><span style="color:#a6e22e">countDown</span><span style="color:#f92672">();</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">};</span>
+
+        StreamObserver<span style="color:#f92672">&lt;</span>ClientSideStreamIn<span style="color:#f92672">&gt;</span> requestObserver <span style="color:#f92672">=</span> asyncStub<span style="color:#f92672">.</span><span style="color:#a6e22e">service</span><span style="color:#f92672">(</span>responseObserver<span style="color:#f92672">);</span>
+
+        <span style="color:#66d9ef">try</span><span style="color:#f92672">{</span>
+            Random rand <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Random<span style="color:#f92672">();</span>
+            <span style="color:#66d9ef">for</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> 0 <span style="color:#f92672">;</span> i <span style="color:#f92672">&lt;</span> 10 <span style="color:#f92672">;</span> i<span style="color:#f92672">++){</span>
+                ClientSideStreamIn clientSideStreamIn <span style="color:#f92672">=</span> ClientSideStreamIn<span style="color:#f92672">.</span><span style="color:#a6e22e">newBuilder</span><span style="color:#f92672">().</span><span style="color:#a6e22e">setInmessage</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Client Side Stream In:&#34;</span> <span style="color:#f92672">+</span> i <span style="color:#f92672">+</span><span style="color:#e6db74">&#34; ...&#34;</span><span style="color:#f92672">).</span><span style="color:#a6e22e">build</span><span style="color:#f92672">();</span>
+                requestObserver<span style="color:#f92672">.</span><span style="color:#a6e22e">onNext</span><span style="color:#f92672">(</span>clientSideStreamIn<span style="color:#f92672">);</span>
+                Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">sleep</span><span style="color:#f92672">(</span>rand<span style="color:#f92672">.</span><span style="color:#a6e22e">nextInt</span><span style="color:#f92672">(</span>1000<span style="color:#f92672">)</span> <span style="color:#f92672">+</span> 500<span style="color:#f92672">);</span>
+                <span style="color:#66d9ef">if</span><span style="color:#f92672">(</span>finishLatch<span style="color:#f92672">.</span><span style="color:#a6e22e">getCount</span><span style="color:#f92672">()</span> <span style="color:#f92672">==</span> 0<span style="color:#f92672">){</span>
+                    <span style="color:#66d9ef">return</span><span style="color:#f92672">;</span>
+                <span style="color:#f92672">}</span>
+            <span style="color:#f92672">}</span>
+
+        <span style="color:#f92672">}</span><span style="color:#66d9ef">catch</span><span style="color:#f92672">(</span>RuntimeException e<span style="color:#f92672">){</span>
+            requestObserver<span style="color:#f92672">.</span><span style="color:#a6e22e">onError</span><span style="color:#f92672">(</span>e<span style="color:#f92672">);</span>
+            <span style="color:#66d9ef">throw</span> e<span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>InterruptedException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            requestObserver<span style="color:#f92672">.</span><span style="color:#a6e22e">onError</span><span style="color:#f92672">(</span>e<span style="color:#f92672">);</span>
+            <span style="color:#66d9ef">throw</span> e<span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+
+        requestObserver<span style="color:#f92672">.</span><span style="color:#a6e22e">onCompleted</span><span style="color:#f92672">();</span>
+
+        finishLatch<span style="color:#f92672">.</span><span style="color:#a6e22e">await</span><span style="color:#f92672">(</span>1<span style="color:#f92672">,</span>TimeUnit<span style="color:#f92672">.</span><span style="color:#a6e22e">MINUTES</span><span style="color:#f92672">);</span>
+</code></pre></div><ol>
+<li>通过ManagedChannelBuilder构建managedChannel</li>
+<li>通过ManagedChannel构建Stub（异步调用所以使用Stub）</li>
+<li>客户端调用完成两件事
+<ul>
+<li>定义服务器端返回的处理方式，实现StreamObserver的onNext, onError, onCompleted处理</li>
+<li>通过Stub调用服务器端的service，取得自己的StreamObserver并将后续消息发送进管道</li>
+</ul>
+</li>
+<li>调用客户端的onComplete方法</li>
+<li>可以通过CountDownLatch记录当前的状态</li>
+</ol>
+<h3 id="bidirectional-stream-rpc">Bidirectional Stream RPC</h3>
+<h4 id="服务器端-3">服务器端</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">    <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">BidirectionalServiceImpl</span> <span style="color:#66d9ef">extends</span> BidirectionalServiceGrpc<span style="color:#f92672">.</span><span style="color:#a6e22e">BidirectionalServiceImplBase</span> <span style="color:#f92672">{</span>
+        <span style="color:#a6e22e">@Override</span>
+        <span style="color:#66d9ef">public</span> StreamObserver<span style="color:#f92672">&lt;</span>BidirectionalIn<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">service</span><span style="color:#f92672">(</span>
+                <span style="color:#66d9ef">final</span> StreamObserver<span style="color:#f92672">&lt;</span>BidirectionalOut<span style="color:#f92672">&gt;</span> responseObserver<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> StreamObserver<span style="color:#f92672">&lt;</span>BidirectionalIn<span style="color:#f92672">&gt;()</span> <span style="color:#f92672">{</span>
+                <span style="color:#66d9ef">int</span> inCount <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
+
+                <span style="color:#a6e22e">@Override</span>
+                <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onNext</span><span style="color:#f92672">(</span>BidirectionalIn bBidirectionalIn<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                    inCount<span style="color:#f92672">++;</span>
+                    logger<span style="color:#f92672">.</span><span style="color:#a6e22e">info</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;current:&#34;</span> <span style="color:#f92672">+</span> inCount <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;:&#34;</span> <span style="color:#f92672">+</span> bBidirectionalIn<span style="color:#f92672">.</span><span style="color:#a6e22e">getInmessage</span><span style="color:#f92672">());</span>
+                    BidirectionalOut bidirectionalOut <span style="color:#f92672">=</span> BidirectionalOut<span style="color:#f92672">.</span><span style="color:#a6e22e">newBuilder</span><span style="color:#f92672">().</span><span style="color:#a6e22e">setOutmessage</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Bidirectional Out message:&#34;</span><span style="color:#f92672">+</span>inCount<span style="color:#f92672">).</span><span style="color:#a6e22e">build</span><span style="color:#f92672">();</span>
+                    responseObserver<span style="color:#f92672">.</span><span style="color:#a6e22e">onNext</span><span style="color:#f92672">(</span>bidirectionalOut<span style="color:#f92672">);</span>
+
+                <span style="color:#f92672">}</span>
+
+                <span style="color:#a6e22e">@Override</span>
+                <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onError</span><span style="color:#f92672">(</span>Throwable throwable<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                    logger<span style="color:#f92672">.</span><span style="color:#a6e22e">log</span><span style="color:#f92672">(</span>Level<span style="color:#f92672">.</span><span style="color:#a6e22e">WARNING</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;Encountered error in Client Side Stream error:&#34;</span> <span style="color:#f92672">+</span> throwable<span style="color:#f92672">.</span><span style="color:#a6e22e">getMessage</span><span style="color:#f92672">());</span>
+                <span style="color:#f92672">}</span>
+
+                <span style="color:#a6e22e">@Override</span>
+                <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onCompleted</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+                    responseObserver<span style="color:#f92672">.</span><span style="color:#a6e22e">onCompleted</span><span style="color:#f92672">();</span>
+                <span style="color:#f92672">}</span>
+            <span style="color:#f92672">};</span>
+        <span style="color:#f92672">}</span>
+</code></pre></div><ol>
+<li>继承自XXXGrpc.XXXImplBase</li>
+<li>实现对应的方法</li>
+<li>调用StreamObserver的onNext方法返回对应对象，因为是管道对象所以可能会调用多次onNext，对象通过message.newBuilder()&hellip;.build()获取</li>
+<li>调用StreamObserver的onCompleted方法完成服务器端调用</li>
+</ol>
+<p>####客户端</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">        <span style="color:#66d9ef">this</span><span style="color:#f92672">(</span>ManagedChannelBuilder<span style="color:#f92672">.</span><span style="color:#a6e22e">forAddress</span><span style="color:#f92672">(</span>host<span style="color:#f92672">,</span>port<span style="color:#f92672">)</span>
+                <span style="color:#f92672">.</span><span style="color:#a6e22e">usePlaintext</span><span style="color:#f92672">(</span><span style="color:#66d9ef">true</span><span style="color:#f92672">)</span>
+                <span style="color:#f92672">.</span><span style="color:#a6e22e">build</span><span style="color:#f92672">());</span>
+
+<span style="color:#f92672">...</span>
+    
+        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">managedChannel</span> <span style="color:#f92672">=</span> channel<span style="color:#f92672">;</span>
+        asyncStub <span style="color:#f92672">=</span> ClientSideStreamServiceGrpc<span style="color:#f92672">.</span><span style="color:#a6e22e">newStub</span><span style="color:#f92672">(</span>managedChannel<span style="color:#f92672">);</span>
+
+<span style="color:#f92672">...</span>
+        <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">BidirectionalServiceImpl</span> <span style="color:#66d9ef">extends</span> BidirectionalServiceGrpc<span style="color:#f92672">.</span><span style="color:#a6e22e">BidirectionalServiceImplBase</span> <span style="color:#f92672">{</span>
+        <span style="color:#a6e22e">@Override</span>
+        <span style="color:#66d9ef">public</span> StreamObserver<span style="color:#f92672">&lt;</span>BidirectionalIn<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">service</span><span style="color:#f92672">(</span>
+                <span style="color:#66d9ef">final</span> StreamObserver<span style="color:#f92672">&lt;</span>BidirectionalOut<span style="color:#f92672">&gt;</span> responseObserver<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> StreamObserver<span style="color:#f92672">&lt;</span>BidirectionalIn<span style="color:#f92672">&gt;()</span> <span style="color:#f92672">{</span>
+                <span style="color:#66d9ef">int</span> inCount <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
+
+                <span style="color:#a6e22e">@Override</span>
+                <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onNext</span><span style="color:#f92672">(</span>BidirectionalIn bBidirectionalIn<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                    inCount<span style="color:#f92672">++;</span>
+                    logger<span style="color:#f92672">.</span><span style="color:#a6e22e">info</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;current:&#34;</span> <span style="color:#f92672">+</span> inCount <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;:&#34;</span> <span style="color:#f92672">+</span> bBidirectionalIn<span style="color:#f92672">.</span><span style="color:#a6e22e">getInmessage</span><span style="color:#f92672">());</span>
+                    BidirectionalOut bidirectionalOut <span style="color:#f92672">=</span> BidirectionalOut<span style="color:#f92672">.</span><span style="color:#a6e22e">newBuilder</span><span style="color:#f92672">().</span><span style="color:#a6e22e">setOutmessage</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Bidirectional Out message:&#34;</span><span style="color:#f92672">+</span>inCount<span style="color:#f92672">).</span><span style="color:#a6e22e">build</span><span style="color:#f92672">();</span>
+                    responseObserver<span style="color:#f92672">.</span><span style="color:#a6e22e">onNext</span><span style="color:#f92672">(</span>bidirectionalOut<span style="color:#f92672">);</span>
+
+                <span style="color:#f92672">}</span>
+
+                <span style="color:#a6e22e">@Override</span>
+                <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onError</span><span style="color:#f92672">(</span>Throwable throwable<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                    logger<span style="color:#f92672">.</span><span style="color:#a6e22e">log</span><span style="color:#f92672">(</span>Level<span style="color:#f92672">.</span><span style="color:#a6e22e">WARNING</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;Encountered error in Client Side Stream error:&#34;</span> <span style="color:#f92672">+</span> throwable<span style="color:#f92672">.</span><span style="color:#a6e22e">getMessage</span><span style="color:#f92672">());</span>
+                <span style="color:#f92672">}</span>
+
+                <span style="color:#a6e22e">@Override</span>
+                <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onCompleted</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+                    responseObserver<span style="color:#f92672">.</span><span style="color:#a6e22e">onCompleted</span><span style="color:#f92672">();</span>
+                <span style="color:#f92672">}</span>
+            <span style="color:#f92672">};</span>
+        <span style="color:#f92672">}</span>
+
+    <span style="color:#f92672">}</span>
+</code></pre></div><ol>
+<li>通过ManagedChannelBuilder构建managedChannel</li>
+<li>通过ManagedChannel构建Stub（异步调用所以使用Stub）</li>
+<li>双向管道需要双方都有处理对方发送来的数据并定义完成的条件</li>
+</ol>
+
+              
+
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+            
+            <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://howsin.github.io/blog/post/hello-hugo/" data-tooltip="使用hugo於github上自架blog" aria-label="NEXT: 使用hugo於github上自架blog">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">NEXT</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--disabled">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">PREVIOUS</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions" aria-label="Share this post">
+            <i class="fa fa-share-alt" aria-hidden="true"></i>
+          </a>
+        </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://howsin.github.io/blog/post/grpc-%E5%9C%A8java%E4%B8%AD%E7%9A%84%E4%BD%BF%E7%94%A8/" title="Share on %s Facebook" aria-label="Share on %s Facebook">
+              <i class="fab fa-facebook-square" aria-hidden="true"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://howsin.github.io/blog/post/grpc-%E5%9C%A8java%E4%B8%AD%E7%9A%84%E4%BD%BF%E7%94%A8/" title="Share on %s Twitter" aria-label="Share on %s Twitter">
+              <i class="fab fa-twitter" aria-hidden="true"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https://howsin.github.io/blog/post/grpc-%E5%9C%A8java%E4%B8%AD%E7%9A%84%E4%BD%BF%E7%94%A8/" title="Share on %s Google&#43;" aria-label="Share on %s Google&#43;">
+              <i class="fab fa-google-plus" aria-hidden="true"></i>
+            </a>
+          </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread" aria-label="Leave a comment">
+            <i class="far fa-comment"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#" aria-label="Back to top">
+        
+          <i class="fa fa-list" aria-hidden="true"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+            
+  
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+    <script type="text/javascript">
+      var disqus_config = function() {
+        this.page.url = 'https:\/\/howsin.github.io\/blog\/post\/grpc-%E5%9C%A8java%E4%B8%AD%E7%9A%84%E4%BD%BF%E7%94%A8\/';
+        
+          this.page.identifier = '\/post\/grpc-%E5%9C%A8java%E4%B8%AD%E7%9A%84%E4%BD%BF%E7%94%A8\/'
+        
+      };
+      (function() {
+        
+        
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+          document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+          return;
+        }
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        var disqus_shortname = 'hugo-tranquilpeak-theme';
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+  
+
+
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2021 Howsin. All Rights Reserved
+  </span>
+</footer>
+
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="5">
+        <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://howsin.github.io/blog/post/hello-hugo/" data-tooltip="使用hugo於github上自架blog" aria-label="NEXT: 使用hugo於github上自架blog">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">NEXT</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--disabled">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">PREVIOUS</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions" aria-label="Share this post">
+            <i class="fa fa-share-alt" aria-hidden="true"></i>
+          </a>
+        </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://howsin.github.io/blog/post/grpc-%E5%9C%A8java%E4%B8%AD%E7%9A%84%E4%BD%BF%E7%94%A8/" title="Share on %s Facebook" aria-label="Share on %s Facebook">
+              <i class="fab fa-facebook-square" aria-hidden="true"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://howsin.github.io/blog/post/grpc-%E5%9C%A8java%E4%B8%AD%E7%9A%84%E4%BD%BF%E7%94%A8/" title="Share on %s Twitter" aria-label="Share on %s Twitter">
+              <i class="fab fa-twitter" aria-hidden="true"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https://howsin.github.io/blog/post/grpc-%E5%9C%A8java%E4%B8%AD%E7%9A%84%E4%BD%BF%E7%94%A8/" title="Share on %s Google&#43;" aria-label="Share on %s Google&#43;">
+              <i class="fab fa-google-plus" aria-hidden="true"></i>
+            </a>
+          </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread" aria-label="Leave a comment">
+            <i class="far fa-comment"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#" aria-label="Back to top">
+        
+          <i class="fa fa-list" aria-hidden="true"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+      </div>
+      
+<div id="share-options-bar" class="share-options-bar" data-behavior="5">
+  <i id="btn-close-shareoptions" class="fa fa-times"></i>
+  <ul class="share-options">
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fhowsin.github.io%2Fblog%2Fpost%2Fgrpc-%25E5%259C%25A8java%25E4%25B8%25AD%25E7%259A%2584%25E4%25BD%25BF%25E7%2594%25A8%2F" aria-label="Share on %s Facebook">
+          <i class="fab fa-facebook-square" aria-hidden="true"></i><span>Share on Facebook</span>
+        </a>
+      </li>
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=https%3A%2F%2Fhowsin.github.io%2Fblog%2Fpost%2Fgrpc-%25E5%259C%25A8java%25E4%25B8%25AD%25E7%259A%2584%25E4%25BD%25BF%25E7%2594%25A8%2F" aria-label="Share on %s Twitter">
+          <i class="fab fa-twitter" aria-hidden="true"></i><span>Share on Twitter</span>
+        </a>
+      </li>
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=https%3A%2F%2Fhowsin.github.io%2Fblog%2Fpost%2Fgrpc-%25E5%259C%25A8java%25E4%25B8%25AD%25E7%259A%2584%25E4%25BD%25BF%25E7%2594%25A8%2F" aria-label="Share on %s Google&#43;">
+          <i class="fab fa-google-plus" aria-hidden="true"></i><span>Share on Google&#43;</span>
+        </a>
+      </li>
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+
+    </div>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-times"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://www.gravatar.com/avatar/4d97c06427794554df76b798877052a0?s=110" alt="Author&#39;s picture" />
+    
+    <h4 id="about-card-name">Howsin</h4>
+    
+      <div id="about-card-bio">Software Engineer. Web Developer</div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        Software Engineer
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker-alt"></i>
+        <br/>
+        Taiwan
+      </div>
+    
+  </div>
+</div>
+
+    
+
+    
+  
+    
+      <div id="cover" style="background-image:url('https://howsin.github.io/blog/images/cover-v1.2.0.jpg');"></div>
+    
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/highlight.min.js" integrity="sha512-z+/WWfyD5tccCukM4VvONpEtLmbAm5LDu7eKiyMQJ9m7OfPEDL7gENyDRL3Yfe8XAuGsS2fS4xSMnl6d30kqGQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha512-uURl+ZXMBrF4AwGaWmEetzrd+J5/8NRkWAvJx5sbPSSuOb0bZLqf+tOzniObO00BjHa/dD7gub9oCGMLPQHtQA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<script src="https://howsin.github.io/blog/js/script-8lglxdix2nqhalxxm2bujhkcc8cctdrd5o5axonwhfzx2zqrer5facyn8.min.js"></script>
+
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-gE8KAQyFIzV1C9+GZ8TKJHZS2s+n7EjNtC+IMRn1l5+WYJTHOODUM6JSjZhFhqXmc7bG8Av6XXpckA4tYhflnw==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/apache.min.js"></script>
+  
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-EWROca+bote+7Oaaar1F6y74iZj1r1F9rm/ly7o+/FwJopbBaWtsFDmaKoZDd3QiGU2pGacBirHJNivmGLYrow==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/go.min.js"></script>
+  
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-GDVzAn0wpx1yVtQsRWmFc6PhJiLBPdUic+h4GWgljBh904O3JU10fk9EKNpVyIoPqkFn54rgL2QBG4BmUTMpiQ==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/http.min.js"></script>
+  
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-UgZlma8NzkrDb/NWgmLIcTrH7i/CSnLLDRFqCSNF5NGPpjKmzyM25qcoXGOup8+cDakKyaiTDd7N4dyH4YT+IA==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/less.min.js"></script>
+  
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-lot9koe73sfXIrUvIPM/UEhuMciN56RPyBdOyZgfO53P2lkWyyXN7J+njcxIIBRV+nVDQeiWtiXg+bLAJZDTfg==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/nginx.min.js"></script>
+  
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-Zd3e7XxHP00TD0Imr0PIfeM0fl0v95kMWuhyAS3Wn1UTSXTkz0OhtRgBAr4JlmADRgiXr4x7lpeUdqaGN8xIog==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/puppet.min.js"></script>
+  
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-qtqDO052iXMSP+5d/aE/jMtL9vIIGvONgTJziC2K/ZIB1yEGa55WVxGE9/08rSQ62EoDifS9SWVGZ7ihSLhzMA==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/scss.min.js"></script>
+  
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-1NmkjnEDnwwwcu28KoQF8vs3oaPFokQHbmbtwGhFfeDsQZtVFI8zW2aE9O8yMYdpdyKV/5blE4pSWw4Z/Sv97w==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/stylus.min.js"></script>
+  
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-B2wSfruPjr8EJL6IIzQr1eAuDwrsfIfccNf/LCEdxELCgC/S/ZMt/Uvk80aD79m7IqOqW+Sw8nbkvha20yZpzg==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/swift.min.js"></script>
+  
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-28oDiQZGKUVN6wQ7PSLPNipOcmkCALXKwOi7bnkyFf8QiMZQxG9EQoy/iiNx6Zxj2cG2SbVa4dXKigQhu7GiFw==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/yaml.min.js"></script>
+  
+
+
+<script>
+$(document).ready(function() {
+  hljs.configure({ classPrefix: '', useBR: false });
+  $('pre.code-highlight > code, pre > code').each(function(i, block) {
+    if (!$(this).hasClass('codeblock')) {
+      $(this).addClass('codeblock');
+    }
+    hljs.highlightBlock(block);
+  });
+});
+</script>
+
+
+
+
+    
+  </body>
+</html>
+
